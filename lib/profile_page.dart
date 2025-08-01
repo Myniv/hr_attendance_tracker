@@ -190,6 +190,8 @@ class ProfilePage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
+          buildInfoRow('Employee Id', profile.employeeId),
+          buildInfoRow('Date Of Joining', profile.dateOfJoining),
           buildInfoRow('Department', profile.department),
           buildInfoRow('Position', profile.position),
           buildInfoRow('Location', profile.location),
