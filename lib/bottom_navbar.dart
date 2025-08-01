@@ -12,7 +12,7 @@ class CustomBottomNavbar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: const Center(
             child: Text(
-              '© 2025 Myniv Company',
+              'HR Attendance Tracker v1.0',
               style: TextStyle(color: Colors.brown),
             ),
           ),
