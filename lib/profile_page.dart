@@ -154,6 +154,7 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
   Widget buildLocationInfo() {
     final profile = Profile();
     return Container(
@@ -209,8 +210,16 @@ class ProfilePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey[600])),
-          Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(
+            width: 300,
+            child: Text(label, style: TextStyle(color: Colors.grey[700])),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
         ],
       ),
     );
