@@ -5,14 +5,31 @@ class CustomBottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Colors.brown,
-      selectedItemColor: Colors.grey,
-      unselectedItemColor: Colors.white,
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+    return Column(
+      mainAxisSize: MainAxisSize.min, // important to keep it tight
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: const Center(
+            child: Text(
+              '© 2025 Myniv Company',
+              style: TextStyle(color: Colors.brown),
+            ),
+          ),
+        ),
+        BottomNavigationBar(
+          backgroundColor: Colors.brown,
+          selectedItemColor: Colors.grey[200],
+          unselectedItemColor: Colors.white,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+        ),
       ],
     );
   }

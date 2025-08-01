@@ -9,7 +9,6 @@ class Profile {
   var location = "Jakarta";
   var employeeId = "2011500457";
   var dateOfJoining = "22/10/2024";
-  
   var bio =
       "Passionate mobile developer with 3+ years experience in Flutter and React Native. Love creating beautiful and functional mobile applications.";
 }
