@@ -49,8 +49,10 @@ class ProfilePage extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: 20),
                 buildProfileInfo(),
-                buildProfileBio(),
+                SizedBox(height: 20),
+                buildLocationInfo(),
               ],
             ),
           ),
@@ -91,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    profile.profession,
+                    profile.position,
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   SizedBox(height: 5),
@@ -110,80 +112,103 @@ class ProfilePage extends StatelessWidget {
 
   Widget buildProfileInfo() {
     final profile = Profile();
-
-    Widget buildInfoBox(
-      IconData leadingIcon,
-      String text,
-      VoidCallback onEdit,
-    ) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        margin: EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color.fromARGB(255, 157, 121, 108)),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(leadingIcon, color: const Color.fromARGB(255, 157, 121, 108)),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color.fromARGB(255, 157, 121, 108)),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'PERSONAL INFORMATION',
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   color: const Color.fromARGB(255, 157, 121, 108),
                 ),
               ),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: const Color.fromARGB(255, 157, 121, 108),
-              ),
-              onPressed: onEdit,
-            ),
-          ],
-        ),
-      );
-    }
 
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
+              IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: const Color.fromARGB(255, 157, 121, 108),
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          SizedBox(height: 5),
+          buildInfoRow('Name', profile.name),
+          buildInfoRow('Email', profile.email),
+          buildInfoRow('Phone Number', profile.phone),
+          buildInfoRow('Date of Birth', profile.dob),
+        ],
+      ),
+    );
+  }
+  Widget buildLocationInfo() {
+    final profile = Profile();
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color.fromARGB(255, 157, 121, 108)),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildInfoBox(Icons.email, profile.email, () {
-            print("Edit email");
-          }),
-          buildInfoBox(Icons.phone, profile.phone, () {
-            print("Edit phone");
-          }),
-          buildInfoBox(Icons.location_on, profile.address, () {
-            print("Edit address");
-          }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'WORK INFORMATION',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 157, 121, 108),
+                ),
+              ),
+
+              IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: const Color.fromARGB(255, 157, 121, 108),
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          SizedBox(height: 5),
+          buildInfoRow('Department', profile.department),
+          buildInfoRow('Position', profile.position),
+          buildInfoRow('Location', profile.location),
         ],
       ),
     );
   }
 
-  Widget buildProfileBio() {
-    final profile = Profile();
-
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget buildInfoRow(String label, String value) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.brown)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(height: 5),
-          Padding(padding: EdgeInsets.all(8.0)),
-          Text(
-            "About Me",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(profile.bio, style: TextStyle(color: Colors.grey)),
+          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
