@@ -53,6 +53,7 @@ class ProfilePage extends StatelessWidget {
                 buildProfileInfo(),
                 SizedBox(height: 20),
                 buildLocationInfo(),
+                
               ],
             ),
           ),
@@ -146,10 +147,10 @@ class ProfilePage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Name', profile.name),
-          buildInfoRow('Email', profile.email),
-          buildInfoRow('Phone Number', profile.phone),
-          buildInfoRow('Date of Birth', profile.dob),
+          buildInfoRow('Name', profile.name, Icons.info),
+          buildInfoRow('Email', profile.email, Icons.email),
+          buildInfoRow('Phone Number', profile.phone, Icons.phone),
+          buildInfoRow('Date of Birth', profile.dob, Icons.calendar_month),
         ],
       ),
     );
@@ -191,17 +192,21 @@ class ProfilePage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Employee Id', profile.employeeId),
-          buildInfoRow('Date Of Joining', profile.dateOfJoining),
-          buildInfoRow('Department', profile.department),
-          buildInfoRow('Position', profile.position),
-          buildInfoRow('Location', profile.location),
+          buildInfoRow('Employee Id', profile.employeeId, Icons.info),
+          buildInfoRow(
+            'Date Of Joining',
+            profile.dateOfJoining,
+            Icons.date_range,
+          ),
+          buildInfoRow('Department', profile.department, Icons.location_city),
+          buildInfoRow('Position', profile.position, Icons.build),
+          buildInfoRow('Location', profile.location, Icons.location_pin),
         ],
       ),
     );
   }
 
-  Widget buildInfoRow(String label, String value) {
+  Widget buildInfoRow(String label, String value, IconData iconF) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -210,6 +215,8 @@ class ProfilePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Icon(iconF, color: Colors.brown),
+          SizedBox(width: 10),
           SizedBox(
             width: 300,
             child: Text(label, style: TextStyle(color: Colors.grey[700])),
