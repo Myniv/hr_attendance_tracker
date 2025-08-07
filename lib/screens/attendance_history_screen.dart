@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
 class AttendanceHistoryScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1F1301),
+      backgroundColor: CustomTheme.backgroundScreenColor,
       appBar: CustomAppbar(
         title: "Attendance History",
         onBack: () {
@@ -60,8 +61,8 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
           height: 50,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Color(0xFFE8D5C4),
-            border: Border.all(color: Color(0xFFD4A574), width: 2),
+            color: CustomTheme.whiteButNot,
+            border: Border.all(color: CustomTheme.colorGold, width: 2),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
@@ -73,11 +74,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 child: Center(
                   child: Text(
                     "October 2025",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
+                    style: CustomTheme().mediumFont(Colors.black),
                   ),
                 ),
               ),
@@ -96,8 +93,8 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         height: 230,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Color(0xFFA0522D),
-          border: Border.all(color: Color(0xFFD4A574), width: 2),
+          color: CustomTheme.colorLightBrown,
+          border: Border.all(color: CustomTheme.colorGold, width: 2),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -135,26 +132,18 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFFE8D5C4),
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
+            style: CustomTheme().smallFont(CustomTheme.whiteButNot),
           ),
           SizedBox(height: 10),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Color(0xFFE8D5C4),
+              color: CustomTheme.whiteButNot,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               value,
-              style: TextStyle(
-                color: Color(0xFF5D2E0A),
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
+              style: CustomTheme().mediumFont(CustomTheme.colorBrown),
             ),
           ),
         ],
@@ -174,7 +163,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         height: 120,
         decoration: BoxDecoration(
           color: Colors.transparent,
-          border: Border.all(color: Color(0xFFFFA800)),
+          border: Border.all(color: CustomTheme.colorYellow, width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -184,8 +173,8 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFFFFA800),
-                  border: Border.all(color: Color(0xFFFFA800)),
+                  color: CustomTheme.colorYellow,
+                  border: Border.all(color: CustomTheme.colorYellow),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -194,20 +183,12 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   children: [
                     Text(
                       day,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                      style: CustomTheme().smallFont(Colors.black),
                     ),
                     SizedBox(height: 10),
                     Text(
                       todayDate,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+                      style: CustomTheme().mediumFont(Colors.black),
                     ),
                   ],
                 ),
@@ -224,20 +205,12 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   children: [
                     Text(
                       "Check In",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                      style: CustomTheme().smallFont(Colors.white),
                     ),
                     SizedBox(height: 10),
                     Text(
                       checkIn,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+                      style: CustomTheme().mediumFont(Colors.white),
                     ),
                   ],
                 ),
@@ -254,20 +227,12 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   children: [
                     Text(
                       "Check Out",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                      style: CustomTheme().smallFont(Colors.white),
                     ),
                     SizedBox(height: 10),
                     Text(
                       checkIn,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
+                      style: CustomTheme().mediumFont(Colors.white),
                     ),
                   ],
                 ),

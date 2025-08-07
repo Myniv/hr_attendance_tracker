@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
 import 'package:hr_attendance_tracker/screens/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,20 +9,33 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: CustomTheme.backgroundScreenColor),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               'Home Screen',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: CustomTheme().largeFont(CustomTheme.whiteButNot),
+            ),
+            SizedBox(
+              height: 100,
+              width: 500,
+              child: Text(
+                'An HR attendance tracker is a tool used to monitor and record employee attendance, including working hours, absences, and leave. It helps HR departments ensure accurate payroll, improve productivity, and maintain compliance with company policies. By using an attendance tracker, organizations can streamline workforce management and make informed decisions based on real-time attendance data.',
+                style: CustomTheme().superSmallFont(
+                  CustomTheme.whiteButNot,
+                  FontWeight.normal,
+                ),
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => AttendanceHistoryScreen(),
+                  ),
                 );
               },
               child: Text('Go to Profile'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -7,53 +8,18 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: CustomTheme.backgroundScreenColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  // width: 500,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    // gradient: LinearGradient(
-                    //   colors: [Colors.purpleAccent, Colors.deepPurpleAccent],
-                    // ),
-                    color: const Color.fromARGB(255, 157, 121, 108),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      // BoxShadow(
-                      //   color: Colors.black26,
-                      //   blurRadius: 10,
-                      //   offset: Offset(0, 5),
-                      // ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: buildProfileHeader(),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: IconButton(
-                          icon: Icon(Icons.edit, color: Colors.white),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                buildProfileHeader(),
                 SizedBox(height: 20),
                 buildProfileInfo(),
                 SizedBox(height: 20),
                 buildLocationInfo(),
-                
               ],
             ),
           ),
@@ -67,43 +33,61 @@ class ProfileScreen extends StatelessWidget {
     final today = DateTime.now();
     final formattedDate = "${today.day}/${today.month}/${today.year}";
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      height: 150,
+      decoration: BoxDecoration(
+        color: CustomTheme.colorLightBrown,
+        border: Border.all(color: CustomTheme.colorGold, width: 2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
         children: [
-          SizedBox(width: 40),
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/images/profile.png'),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    profile.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/images/profile.png'),
+                ),
+                const SizedBox(width: 20),
+                Column(
+                  mainAxisSize: MainAxisSize.min, // shrink to fit children
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profile.name,
+                      style: CustomTheme().largeFont(Colors.white),
                     ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    profile.position,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
+                    const SizedBox(height: 5),
+                    Text(
+                      profile.position,
+                      style: CustomTheme().smallFont(
+                        Colors.white,
+                        FontWeight.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      formattedDate,
+                      style: CustomTheme().smallFont(
+                        Colors.white,
+                        FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: IconButton(
+              icon: Icon(Icons.edit, color: Colors.white),
+              onPressed: () {},
             ),
           ),
         ],
@@ -116,8 +100,8 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color.fromARGB(255, 157, 121, 108)),
+        color: CustomTheme.whiteButNot,
+        border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
@@ -131,17 +115,11 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'PERSONAL INFORMATION',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 157, 121, 108),
-                ),
+                style: CustomTheme().smallFont(CustomTheme.colorBrown),
               ),
 
               IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: const Color.fromARGB(255, 157, 121, 108),
-                ),
+                icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
                 onPressed: () {},
               ),
             ],
@@ -161,8 +139,8 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color.fromARGB(255, 157, 121, 108)),
+        color: CustomTheme.whiteButNot,
+        border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
@@ -176,17 +154,11 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'WORK INFORMATION',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 157, 121, 108),
-                ),
+                style: CustomTheme().smallFont(CustomTheme.colorBrown),
               ),
 
               IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: const Color.fromARGB(255, 157, 121, 108),
-                ),
+                icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
                 onPressed: () {},
               ),
             ],
@@ -208,23 +180,29 @@ class ProfileScreen extends StatelessWidget {
 
   Widget buildInfoRow(String label, String value, IconData iconF) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.brown)),
+        border: Border(bottom: BorderSide(color: CustomTheme.colorBrown)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(iconF, color: Colors.brown),
+          Icon(iconF, color: CustomTheme.colorBrown),
           SizedBox(width: 10),
           SizedBox(
             width: 300,
-            child: Text(label, style: TextStyle(color: Colors.grey[700])),
+            child: Text(
+              label,
+              style: CustomTheme().superSmallFont(CustomTheme.colorLightBrown, FontWeight.bold),
+            ),
           ),
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                value,
+                style: CustomTheme().superSmallFont(CustomTheme.colorLightBrown, FontWeight.normal),
+              ),
             ),
           ),
         ],

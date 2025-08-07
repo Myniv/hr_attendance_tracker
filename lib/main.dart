@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
 import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
@@ -45,6 +46,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<IconData> _iconScreen = [Icons.home, Icons.person];
   final List<Widget> _screens = [
     HomeScreen(),
+    // AttendanceHistoryScreen(),
     ProfileScreen(),
     // PortofolioScreen(),
   ];

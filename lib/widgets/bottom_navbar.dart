@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
 
 class CustomBottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -20,10 +21,11 @@ class CustomBottomNavbar extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(color: CustomTheme.backgroundScreenColor),
           child: const Center(
             child: Text(
               'HR Attendance Tracker v1.0',
-              style: TextStyle(color: Colors.brown),
+              style: TextStyle(color: CustomTheme.whiteButNot),
             ),
           ),
         ),
@@ -31,7 +33,7 @@ class CustomBottomNavbar extends StatelessWidget {
           currentIndex: currentIndex,
           onTap: onTap,
           elevation: 0,
-          backgroundColor: Colors.brown,
+          backgroundColor: CustomTheme.colorBrown,
           selectedItemColor: Colors.grey[200],
           unselectedItemColor: Colors.white,
           items: <BottomNavigationBarItem>[
