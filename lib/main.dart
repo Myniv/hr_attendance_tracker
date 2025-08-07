@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hr_attendance_tracker/bottom_navbar.dart';
-import 'package:hr_attendance_tracker/custom_appbar.dart';
-import 'package:hr_attendance_tracker/profile_page.dart';
+import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
+import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
+import 'package:hr_attendance_tracker/screens/profile_page.dart';
 
 void main() {
   runApp(const MainApp());
