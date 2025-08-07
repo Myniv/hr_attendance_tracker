@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
