@@ -63,7 +63,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
           decoration: BoxDecoration(
             color: CustomTheme.whiteButNot,
             border: Border.all(color: CustomTheme.colorGold, width: 2),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: CustomTheme.borderRadius,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -95,7 +95,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         decoration: BoxDecoration(
           color: CustomTheme.colorLightBrown,
           border: Border.all(color: CustomTheme.colorGold, width: 2),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: CustomTheme.borderRadius,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,7 +139,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: CustomTheme.whiteButNot,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: CustomTheme.borderRadius,
             ),
             child: Text(
               value,
@@ -164,7 +164,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         decoration: BoxDecoration(
           color: Colors.transparent,
           border: Border.all(color: CustomTheme.colorYellow, width: 2),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: CustomTheme.borderRadius,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,7 +175,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 decoration: BoxDecoration(
                   color: CustomTheme.colorYellow,
                   border: Border.all(color: CustomTheme.colorYellow),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: CustomTheme.borderRadius,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -195,11 +195,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
               ),
             ),
             Expanded(
-              child: Container(
-                // decoration: BoxDecoration(
-                //   color: Color.fromARGB(255, 255, 255, 255),
-                // ),
-                child: Column(
+              child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -214,14 +210,10 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                     ),
                   ],
                 ),
-              ),
+              
             ),
             Expanded(
-              child: Container(
-                // decoration: BoxDecoration(
-                //   color: Color.fromARGB(255, 255, 255, 255),
-                // ),
-                child: Column(
+              child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -236,7 +228,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                     ),
                   ],
                 ),
-              ),
+              
             ),
           ],
         ),

@@ -39,7 +39,7 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: CustomTheme.colorLightBrown,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: CustomTheme.borderRadius,
       ),
       child: Stack(
         children: [
@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: CustomTheme.whiteButNot,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomTheme.borderRadius,
         boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
@@ -141,7 +141,7 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: CustomTheme.whiteButNot,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomTheme.borderRadius,
         boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],

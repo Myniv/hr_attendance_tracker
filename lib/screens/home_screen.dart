@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
-import 'package:hr_attendance_tracker/screens/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
