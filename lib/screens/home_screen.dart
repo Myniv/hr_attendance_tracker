@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('Go to Profile'),
+              child: Text('History Attendance'),
             ),
           ],
         ),
