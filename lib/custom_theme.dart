@@ -99,4 +99,43 @@ class CustomTheme {
       fontSize: fontSize,
     );
   }
+
+  String formatTime(DateTime time) {
+    return "${time.hour}:${time.minute}";
+  }
+
+  String formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
+  String formatDay(DateTime date) {
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    return days[date.weekday - 1];
+  }
+
+  String formatMonth(DateTime date) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return months[date.month - 1];
+  }
 }

@@ -223,7 +223,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      date.toString(),
+                      CustomTheme().formatDate(date!),
                       style: CustomTheme().smallFont(
                         Colors.black,
                         null,
@@ -249,8 +249,8 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    inTime.toString(),
-                    style: inTime != "Off"
+                    inTime != null ? CustomTheme().formatTime(inTime) : "Off",
+                    style: inTime != null
                         ? CustomTheme().smallFont(Colors.white, null, context)
                         : CustomTheme().smallFont(Colors.red, null, context),
                   ),
@@ -272,8 +272,8 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    outTime.toString(),
-                    style: inTime != "Off"
+                    outTime != null ? CustomTheme().formatTime(outTime) : "Off",
+                    style: outTime != null
                         ? CustomTheme().smallFont(Colors.white, null, context)
                         : CustomTheme().smallFont(Colors.red, null, context),
                   ),
