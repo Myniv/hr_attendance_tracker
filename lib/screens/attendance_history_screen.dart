@@ -15,84 +15,19 @@ class AttendanceHistoryScreen extends StatefulWidget {
 class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
   final List<AttendanceHistory> attendanceHistory = [
     AttendanceHistory(
-      day: "Monday",
-      date: "1",
-      inTime: "08:00",
-      outTime: "17:00",
+      date: DateTime(2025, 8, 1),
+      inTime: DateTime(0, 1, 1, 8, 0),
+      outTime: DateTime(0, 1, 1, 17, 0),
     ),
     AttendanceHistory(
-      day: "Tuesday",
-      date: "2",
-      inTime: "08:15",
-      outTime: "17:10",
+      date: DateTime(2025, 8, 2),
+      inTime: DateTime(0, 1, 1, 8, 15),
+      outTime: DateTime(0, 1, 1, 17, 10),
     ),
     AttendanceHistory(
-      day: "Wednesday",
-      date: "3",
-      inTime: "08:05",
-      outTime: "17:00",
-    ),
-    AttendanceHistory(
-      day: "Thursday",
-      date: "4",
-      inTime: "08:10",
-      outTime: "17:20",
-    ),
-    AttendanceHistory(
-      day: "Friday",
-      date: "5",
-      inTime: "07:55",
-      outTime: "16:50",
-    ),
-    AttendanceHistory(
-      day: "Saturday",
-      date: "6",
-      inTime: "Off",
-      outTime: "Off",
-    ),
-    AttendanceHistory(day: "Sunday", date: "7", inTime: "Off", outTime: "Off"),
-    AttendanceHistory(
-      day: "Monday",
-      date: "8",
-      inTime: "08:00",
-      outTime: "17:00",
-    ),
-    AttendanceHistory(
-      day: "Tuesday",
-      date: "9",
-      inTime: "08:20",
-      outTime: "17:15",
-    ),
-    AttendanceHistory(
-      day: "Wednesday",
-      date: "10",
-      inTime: "08:00",
-      outTime: "17:00",
-    ),
-    AttendanceHistory(
-      day: "Thursday",
-      date: "11",
-      inTime: "08:10",
-      outTime: "17:00",
-    ),
-    AttendanceHistory(
-      day: "Friday",
-      date: "12",
-      inTime: "08:00",
-      outTime: "16:45",
-    ),
-    AttendanceHistory(
-      day: "Saturday",
-      date: "13",
-      inTime: "Off",
-      outTime: "Off",
-    ),
-    AttendanceHistory(day: "Sunday", date: "14", inTime: "Off", outTime: "Off"),
-    AttendanceHistory(
-      day: "Monday",
-      date: "15",
-      inTime: "08:00",
-      outTime: "17:00",
+      date: DateTime(2025, 8, 6),
+      inTime: null, // Off day
+      outTime: null,
     ),
   ];
 
@@ -121,7 +56,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 itemBuilder: (context, index) {
                   final attendance = attendanceHistory[index];
                   return _attendanceCard(
-                    attendance.day,
+                    attendance.dayName,
                     attendance.date,
                     attendance.inTime,
                     attendance.outTime,
@@ -159,7 +94,11 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 child: Center(
                   child: Text(
                     "October 2025",
-                    style: CustomTheme().mediumFont(Colors.black),
+                    style: CustomTheme().superSmallFont(
+                      Colors.black,
+                      null,
+                      context,
+                    ),
                   ),
                 ),
               ),
@@ -217,7 +156,11 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: CustomTheme().smallFont(CustomTheme.whiteButNot),
+            style: CustomTheme().superSmallFont(
+              CustomTheme.whiteButNot,
+              null,
+              context,
+            ),
           ),
           SizedBox(height: 10),
           Container(
@@ -228,7 +171,11 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
             ),
             child: Text(
               value,
-              style: CustomTheme().mediumFont(CustomTheme.colorBrown),
+              style: CustomTheme().smallFont(
+                CustomTheme.colorBrown,
+                null,
+                context,
+              ),
             ),
           ),
         ],
@@ -238,9 +185,9 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
 
   Widget _attendanceCard(
     String day,
-    String date,
-    String inTime,
-    String outTime,
+    DateTime? date,
+    DateTime? inTime,
+    DateTime? outTime,
   ) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
@@ -266,9 +213,23 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(day, style: CustomTheme().smallFont(Colors.black)),
+                    Text(
+                      day,
+                      style: CustomTheme().superSmallFont(
+                        Colors.black,
+                        null,
+                        context,
+                      ),
+                    ),
                     SizedBox(height: 10),
-                    Text(date, style: CustomTheme().mediumFont(Colors.black)),
+                    Text(
+                      date.toString(),
+                      style: CustomTheme().smallFont(
+                        Colors.black,
+                        null,
+                        context,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -280,14 +241,18 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 children: [
                   Text(
                     "Check In",
-                    style: CustomTheme().smallFont(Colors.white),
+                    style: CustomTheme().superSmallFont(
+                      Colors.white,
+                      null,
+                      context,
+                    ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    inTime,
+                    inTime.toString(),
                     style: inTime != "Off"
-                        ? CustomTheme().mediumFont(Colors.white)
-                        : CustomTheme().mediumFont(Colors.red),
+                        ? CustomTheme().smallFont(Colors.white, null, context)
+                        : CustomTheme().smallFont(Colors.red, null, context),
                   ),
                 ],
               ),
@@ -299,14 +264,18 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                 children: [
                   Text(
                     "Check Out",
-                    style: CustomTheme().smallFont(Colors.white),
+                    style: CustomTheme().superSmallFont(
+                      Colors.white,
+                      null,
+                      context,
+                    ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    outTime,
+                    outTime.toString(),
                     style: inTime != "Off"
-                        ? CustomTheme().mediumFont(Colors.white)
-                        : CustomTheme().mediumFont(Colors.red),
+                        ? CustomTheme().smallFont(Colors.white, null, context)
+                        : CustomTheme().smallFont(Colors.red, null, context),
                   ),
                 ],
               ),

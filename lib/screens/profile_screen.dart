@@ -15,11 +15,11 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                buildProfileHeader(),
+                buildProfileHeader(context),
                 SizedBox(height: 20),
-                buildProfileInfo(),
+                buildProfileInfo(context),
                 SizedBox(height: 20),
-                buildLocationInfo(),
+                buildLocationInfo(context),
               ],
             ),
           ),
@@ -28,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProfileHeader() {
+  Widget buildProfileHeader(BuildContext context) {
     final profile = Profile();
     final today = DateTime.now();
     final formattedDate = "${today.day}/${today.month}/${today.year}";
@@ -59,22 +59,28 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Text(
                       profile.name,
-                      style: CustomTheme().largeFont(Colors.white),
+                      style: CustomTheme().smallFont(
+                        Colors.white,
+                        null,
+                        context,
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       profile.position,
-                      style: CustomTheme().smallFont(
+                      style: CustomTheme().superSmallFont(
                         Colors.white,
                         FontWeight.normal,
+                        context,
                       ),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       formattedDate,
-                      style: CustomTheme().smallFont(
+                      style: CustomTheme().superSmallFont(
                         Colors.white,
                         FontWeight.normal,
+                        context,
                       ),
                     ),
                   ],
@@ -95,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProfileInfo() {
+  Widget buildProfileInfo(BuildContext context) {
     final profile = Profile();
     return Container(
       padding: EdgeInsets.all(16),
@@ -115,7 +121,11 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'PERSONAL INFORMATION',
-                style: CustomTheme().smallFont(CustomTheme.colorBrown),
+                style: CustomTheme().smallFont(
+                  CustomTheme.colorBrown,
+                  null,
+                  context,
+                ),
               ),
 
               IconButton(
@@ -125,16 +135,21 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Name', profile.name, Icons.info),
-          buildInfoRow('Email', profile.email, Icons.email),
-          buildInfoRow('Phone Number', profile.phone, Icons.phone),
-          buildInfoRow('Date of Birth', profile.dob, Icons.calendar_month),
+          buildInfoRow('Name', profile.name, Icons.info, context),
+          buildInfoRow('Email', profile.email, Icons.email, context),
+          buildInfoRow('Phone Number', profile.phone, Icons.phone, context),
+          buildInfoRow(
+            'Date of Birth',
+            profile.dob,
+            Icons.calendar_month,
+            context,
+          ),
         ],
       ),
     );
   }
 
-  Widget buildLocationInfo() {
+  Widget buildLocationInfo(BuildContext context) {
     final profile = Profile();
     return Container(
       padding: EdgeInsets.all(16),
@@ -154,7 +169,11 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'WORK INFORMATION',
-                style: CustomTheme().smallFont(CustomTheme.colorBrown),
+                style: CustomTheme().smallFont(
+                  CustomTheme.colorBrown,
+                  null,
+                  context,
+                ),
               ),
 
               IconButton(
@@ -164,21 +183,37 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Employee Id', profile.employeeId, Icons.info),
+          buildInfoRow('Employee Id', profile.employeeId, Icons.info, context),
           buildInfoRow(
             'Date Of Joining',
             profile.dateOfJoining,
             Icons.date_range,
+            context,
           ),
-          buildInfoRow('Department', profile.department, Icons.location_city),
-          buildInfoRow('Position', profile.position, Icons.build),
-          buildInfoRow('Location', profile.location, Icons.location_pin),
+          buildInfoRow(
+            'Department',
+            profile.department,
+            Icons.location_city,
+            context,
+          ),
+          buildInfoRow('Position', profile.position, Icons.build, context),
+          buildInfoRow(
+            'Location',
+            profile.location,
+            Icons.location_pin,
+            context,
+          ),
         ],
       ),
     );
   }
 
-  Widget buildInfoRow(String label, String value, IconData iconF) {
+  Widget buildInfoRow(
+    String label,
+    String value,
+    IconData iconF,
+    BuildContext context,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
@@ -193,7 +228,11 @@ class ProfileScreen extends StatelessWidget {
             width: 300,
             child: Text(
               label,
-              style: CustomTheme().superSmallFont(CustomTheme.colorLightBrown, FontWeight.bold),
+              style: CustomTheme().superSmallFont(
+                CustomTheme.colorLightBrown,
+                FontWeight.bold,
+                context,
+              ),
             ),
           ),
           Expanded(
@@ -201,7 +240,11 @@ class ProfileScreen extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 value,
-                style: CustomTheme().superSmallFont(CustomTheme.colorLightBrown, FontWeight.normal),
+                style: CustomTheme().superSmallFont(
+                  CustomTheme.colorLightBrown,
+                  FontWeight.normal,
+                  context,
+                ),
               ),
             ),
           ),
