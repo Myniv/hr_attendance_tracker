@@ -223,7 +223,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      CustomTheme().formatDate(date!),
+                      CustomTheme().formatDayDate(date!),
                       style: CustomTheme().smallFont(
                         Colors.black,
                         null,

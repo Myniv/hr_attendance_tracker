@@ -108,6 +108,10 @@ class CustomTheme {
     return "${date.day}/${date.month}/${date.year}";
   }
 
+  String formatDayDate(DateTime date) {
+    return "${date.day}";
+  }
+
   String formatDay(DateTime date) {
     const days = [
       "Monday",
