@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
 import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 import 'package:hr_attendance_tracker/screens/profile_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AttendanceHistoryProvider()),
+      ],
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -15,6 +25,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Sample Portfolio App",
+      theme: ThemeData(
+        scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
+      ),
       // home: Scaffold(
       //   appBar: CustomAppbar(),
       //   body: ProfilePage(),
@@ -64,6 +77,9 @@ class _MainScreenState extends State<MainScreen> {
           icon: _iconScreen,
           onTap: _changeTab,
         ),
+      ),
+      theme: ThemeData(
+        scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
       ),
     );
   }
