@@ -6,8 +6,8 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   List<AttendanceHistory> get attHistory => _attHistory;
 
   void clockIn(DateTime inTime) {
-    // final today = DateTime.now();
-    final today = inTime;
+    final today = DateTime.now();
+    // final today = inTime;
     int todayIndex = -1;
 
     for (var i = 0; i < _attHistory.length; i++) {
@@ -36,14 +36,13 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   }
 
   void clockOut(DateTime outTime) {
-    // final today = DateTime.now();
-    final today = outTime;
+    final today = DateTime.now();
+    // final today = outTime;
 
     for (var i = 0; i < _attHistory.length; i++) {
       if (_attHistory[i].date.day == today.day &&
           _attHistory[i].date.month == today.month &&
           _attHistory[i].date.year == today.year) {
-        // Simply update the outTime - no need to recreate the object
         _attHistory[i].setOutTime(outTime);
         notifyListeners();
         print(

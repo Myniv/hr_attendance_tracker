@@ -1,7 +1,7 @@
 class AttendanceHistory {
   DateTime date;
   DateTime? inTime;
-  DateTime? outTime; // Remove final to make it mutable
+  DateTime? outTime;
   double hoursWorked;
   String dayName;
 
@@ -33,7 +33,6 @@ class AttendanceHistory {
            : 0.0,
        dayName = _getDayName(date);
 
-  // Add a method to update outTime and recalculate hoursWorked
   void setOutTime(DateTime newOutTime) {
     outTime = DateTime(
       date.year,
@@ -43,7 +42,6 @@ class AttendanceHistory {
       newOutTime.minute,
     );
 
-    // Recalculate hoursWorked
     if (inTime != null && outTime != null) {
       hoursWorked = _calculateHoursWorked(inTime!, outTime!);
     }

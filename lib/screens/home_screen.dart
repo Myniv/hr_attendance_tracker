@@ -223,7 +223,7 @@ class HomeScreen extends StatelessWidget {
               isClockIn: isClockIn,
               onPressed: () {
                 showDialog(
-                  context: context,
+                  context: context, 
                   builder: (ctx) {
                     return AlertDialog(
                       title: Text("Clock Out"),
