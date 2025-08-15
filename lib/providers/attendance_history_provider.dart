@@ -6,7 +6,8 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   List<AttendanceHistory> get attHistory => _attHistory;
 
   void clockIn(DateTime inTime) {
-    final today = DateTime.now();
+    // final today = DateTime.now();
+    final today = inTime;
     int todayIndex = -1;
 
     for (var i = 0; i < _attHistory.length; i++) {
@@ -19,7 +20,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     }
 
     if (todayIndex == -1) {
-      _attHistory.add(AttendanceHistory(date: DateTime.now(), inTime: inTime));
+      _attHistory.add(AttendanceHistory(date: today, inTime: inTime));
       notifyListeners();
       print(
         _attHistory
@@ -35,7 +36,8 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   }
 
   void clockOut(DateTime outTime) {
-    final today = DateTime.now();
+    // final today = DateTime.now();
+    final today = outTime;
 
     for (var i = 0; i < _attHistory.length; i++) {
       if (_attHistory[i].date.day == today.day &&
