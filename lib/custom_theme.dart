@@ -97,11 +97,32 @@ class CustomTheme {
       color: color,
       fontWeight: fontWeight ?? FontWeight.bold,
       fontSize: fontSize,
+      letterSpacing: 1.5,
+    );
+  }
+
+  TextStyle superLargeFont(
+    Color color, [
+    FontWeight? fontWeight,
+    BuildContext? context,
+  ]) {
+    double fontSize = 26; // Title/Heading
+    if (context != null) {
+      fontSize = _getResponsiveFontSize(context, 26);
+    }
+
+    return TextStyle(
+      color: color,
+      fontWeight: fontWeight ?? FontWeight.bold,
+      fontSize: fontSize,
     );
   }
 
   String formatTime(DateTime time) {
-    return "${time.hour}:${time.minute}";
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+    return "$hour:$minute $period";
   }
 
   String formatDate(DateTime date) {
