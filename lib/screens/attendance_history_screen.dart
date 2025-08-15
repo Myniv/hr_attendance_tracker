@@ -1,38 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/attendance_history.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
-class AttendanceHistoryScreen extends StatefulWidget {
-  final Color color = Color(0xFF1F1301);
-  // const AttendanceHistoryScreen({Key? key}) : super(key: key);
+class AttendanceHistoryScreen extends StatelessWidget {
+  int absent = 0;
+  int lateClockIn = 0;
+  int earlyClockIn = 0;
+  int present = 0;
+  int onTime = 0;
+  int overtime = 0;
 
-  @override
-  State<AttendanceHistoryScreen> createState() =>
-      _AttendanceHistoryScreenState();
-}
-
-class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
-  final List<AttendanceHistory> attendanceHistory = [
-    AttendanceHistory(
-      date: DateTime(2025, 8, 1),
-      inTime: DateTime(0, 1, 1, 8, 0),
-      outTime: DateTime(0, 1, 1, 17, 0),
-    ),
-    AttendanceHistory(
-      date: DateTime(2025, 8, 2),
-      inTime: DateTime(0, 1, 1, 8, 15),
-      outTime: DateTime(0, 1, 1, 17, 10),
-    ),
-    AttendanceHistory(
-      date: DateTime(2025, 8, 6),
-      inTime: null, // Off day
-      outTime: null,
-    ),
-  ];
+  DateTime today = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
+    final workStart = DateTime(today.year, today.month, today.day, 8, 0);
+    final finalClockIn = DateTime(today.year, today.month, today.day, 9, 0);
+    final clockOut = DateTime(today.year, today.month, today.day, 15, 0);
+    final attHistory = context.watch<AttendanceHistoryProvider>().attHistory;
+
+    for (var record in attHistory) {
+      if (record.inTime != null) {
+        present++;
+
+        if (record.inTime!.isAfter(finalClockIn)) {
+          lateClockIn++;
+        } else if (record.inTime!.isBefore(workStart)) {
+          earlyClockIn++;
+        } else {
+          onTime++;
+        }
+
+        if (record.outTime != null && record.outTime!.isAfter(clockOut)) {
+          overtime++;
+        }
+      } else {
+        absent++;
+      }
+    }
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
       appBar: CustomAppbar(
@@ -47,19 +55,20 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _selectDate(),
-              _summaryCard(),
+              _selectDate(context),
+              _summaryCard(context),
               ListView.builder(
-                itemCount: attendanceHistory.length,
+                itemCount: attHistory.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final attendance = attendanceHistory[index];
+                  final attendance = attHistory[index];
                   return _attendanceCard(
                     attendance.dayName,
                     attendance.date,
                     attendance.inTime,
                     attendance.outTime,
+                    context,
                   );
                 },
               ),
@@ -70,7 +79,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
     );
   }
 
-  Widget _selectDate() {
+  Widget _selectDate(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: InkWell(
@@ -110,7 +119,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
     );
   }
 
-  Widget _summaryCard() {
+  Widget _summaryCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
       child: Container(
@@ -129,18 +138,22 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _summaryItem("Absent", "13"),
-                _summaryItem("Late Check In", "3"),
-                _summaryItem("Early Clock In", "6"),
+                _summaryItem("Absent", absent.toString(), context),
+                _summaryItem("Late Clock In", lateClockIn.toString(), context),
+                _summaryItem(
+                  "Early Clock In",
+                  earlyClockIn.toString(),
+                  context,
+                ),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _summaryItem("Present", "18"),
-                _summaryItem("On Time", "15"),
-                _summaryItem("Overtime", "2"),
+                _summaryItem("Present", present.toString(), context),
+                _summaryItem("On Time", onTime.toString(), context),
+                _summaryItem("Overtime", overtime.toString(), context),
               ],
             ),
           ],
@@ -149,7 +162,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
     );
   }
 
-  Widget _summaryItem(String title, String value) {
+  Widget _summaryItem(String title, String value, BuildContext context) {
     return Expanded(
       child: Column(
         children: [
@@ -188,6 +201,7 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
     DateTime? date,
     DateTime? inTime,
     DateTime? outTime,
+    BuildContext context,
   ) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),

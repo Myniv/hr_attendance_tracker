@@ -5,12 +5,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   final List<AttendanceHistory> _attHistory = [];
   List<AttendanceHistory> get attHistory => _attHistory;
 
-  void checkIn(DateTime inTime) {
-    _attHistory.add(AttendanceHistory(date: DateTime.now(), inTime: inTime));
-    notifyListeners();
-  }
-
-  void checkOut(DateTime outTime) {
+  void clockIn(DateTime inTime) {
     final today = DateTime.now();
     int todayIndex = -1;
 
@@ -23,18 +18,46 @@ class AttendanceHistoryProvider extends ChangeNotifier {
       }
     }
 
-    if (todayIndex != -1) {
-      // Update the existing record
-      _attHistory[todayIndex] = AttendanceHistory(
-        date: _attHistory[todayIndex].date,
-        outTime: outTime,
-      );
+    if (todayIndex == -1) {
+      _attHistory.add(AttendanceHistory(date: DateTime.now(), inTime: inTime));
       notifyListeners();
+      print(
+        _attHistory
+            .map(
+              (r) =>
+                  'Date: ${r.date}, In: ${r.inTime}, hoursWorked ${r.hoursWorked}',
+            )
+            .toList(),
+      );
     } else {
-      if (kDebugMode) {
-        print("Please check in first.");
-      }
       return null;
+    }
+  }
+
+  void clockOut(DateTime outTime) {
+    final today = DateTime.now();
+
+    for (var i = 0; i < _attHistory.length; i++) {
+      if (_attHistory[i].date.day == today.day &&
+          _attHistory[i].date.month == today.month &&
+          _attHistory[i].date.year == today.year) {
+        // Simply update the outTime - no need to recreate the object
+        _attHistory[i].setOutTime(outTime);
+        notifyListeners();
+        print(
+          _attHistory
+              .map(
+                (r) =>
+                    'Date: ${r.date}, In: ${r.inTime}, Out: ${r.outTime}, hoursWorked ${r.hoursWorked}',
+              )
+              .toList(),
+        );
+        return;
+      }
+    }
+
+    if (kDebugMode) {
+      print("Please check in first.");
     }
   }
 }

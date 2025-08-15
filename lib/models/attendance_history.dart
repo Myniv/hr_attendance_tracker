@@ -1,9 +1,9 @@
 class AttendanceHistory {
-  final DateTime date;
-  final DateTime? inTime;
-  final DateTime? outTime;
-  final double hoursWorked;
-  final String dayName;
+  DateTime date;
+  DateTime? inTime;
+  DateTime? outTime; // Remove final to make it mutable
+  double hoursWorked;
+  String dayName;
 
   AttendanceHistory({
     required DateTime date,
@@ -33,12 +33,25 @@ class AttendanceHistory {
            : 0.0,
        dayName = _getDayName(date);
 
-  static double _calculateHoursWorked(DateTime inTime, DateTime? outTime) {
-    if (outTime != null) {
-      Duration diff = outTime.difference(inTime);
-      return diff.inMinutes / 60.0;
+  // Add a method to update outTime and recalculate hoursWorked
+  void setOutTime(DateTime newOutTime) {
+    outTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      newOutTime.hour,
+      newOutTime.minute,
+    );
+
+    // Recalculate hoursWorked
+    if (inTime != null && outTime != null) {
+      hoursWorked = _calculateHoursWorked(inTime!, outTime!);
     }
-    return 0.0;
+  }
+
+  static double _calculateHoursWorked(DateTime inTime, DateTime outTime) {
+    Duration diff = outTime.difference(inTime);
+    return diff.inMinutes / 60.0;
   }
 
   static String _getDayName(DateTime date) {
@@ -53,13 +66,4 @@ class AttendanceHistory {
     ];
     return days[date.weekday - 1];
   }
-
-  // String get formattedDate =>
-  //     "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}";
-
-  // String get formattedInTime =>
-  //     "${inTime.hour.toString().padLeft(2, '0')}:${inTime.minute.toString().padLeft(2, '0')}";
-
-  // String get formattedOutTime =>
-  //     "${outTime.hour.toString().padLeft(2, '0')}:${outTime.minute.toString().padLeft(2, '0')}";
 }
