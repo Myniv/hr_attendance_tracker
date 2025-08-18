@@ -112,23 +112,4 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     _summaries.add(newSummary);
     return newSummary;
   }
-
-  List<AttendanceSummary> getAllSummaries() {
-    return List.from(_summaries);
-  }
-
-  AttendanceSummary getCurrentMonthSummary() {
-    return getSummary(DateTime.now());
-  }
-
-  void refreshSummary(DateTime date) {
-    _updateOrCreateSummary(date);
-    notifyListeners();
-  }
-
-  void clearAll() {
-    _attHistory.clear();
-    _summaries.clear();
-    notifyListeners();
-  }
 }
