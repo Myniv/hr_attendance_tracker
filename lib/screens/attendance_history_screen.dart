@@ -3,44 +3,33 @@ import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/attendance_history.dart';
+import 'package:hr_attendance_tracker/models/attendance_summary.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
-class AttendanceHistoryScreen extends StatelessWidget {
-  int absent = 0;
-  int lateClockIn = 0;
-  int earlyClockIn = 0;
-  int present = 0;
-  int onTime = 0;
-  int overtime = 0;
+class AttendanceHistoryScreen extends StatefulWidget {
+  @override
+  State<AttendanceHistoryScreen> createState() =>
+      _AttendanceHistoryScreenState();
+}
 
-  DateTime today = DateTime.now();
+class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
+  DateTime selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final workStart = DateTime(today.year, today.month, today.day, 8, 0);
-    final finalClockIn = DateTime(today.year, today.month, today.day, 9, 0);
-    final clockOut = DateTime(today.year, today.month, today.day, 15, 0);
-    final attHistory = context.watch<AttendanceHistoryProvider>().attHistory;
+    final provider = context.watch<AttendanceHistoryProvider>();
+    final attHistory = provider.attHistory;
 
-    for (var record in attHistory) {
-      if (record.inTime != null) {
-        present++;
+    final summary = provider.getSummary(selectedDate);
 
-        if (record.inTime!.isAfter(finalClockIn)) {
-          lateClockIn++;
-        } else if (record.inTime!.isBefore(workStart)) {
-          earlyClockIn++;
-        } else {
-          onTime++;
-        }
+    final filteredHistory = attHistory
+        .where(
+          (record) =>
+              record.date.year == selectedDate.year &&
+              record.date.month == selectedDate.month,
+        )
+        .toList();
 
-        if (record.outTime != null && record.outTime!.isAfter(clockOut)) {
-          overtime++;
-        }
-      } else {
-        absent++;
-      }
-    }
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
       appBar: CustomAppbar(
@@ -56,13 +45,13 @@ class AttendanceHistoryScreen extends StatelessWidget {
           child: Column(
             children: [
               _selectDate(context),
-              _summaryCard(context),
+              _summaryCard(context, summary),
               ListView.builder(
-                itemCount: attHistory.length,
+                itemCount: filteredHistory.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final attendance = attHistory[index];
+                  final attendance = filteredHistory[index];
                   return _attendanceCard(
                     attendance.dayName,
                     attendance.date,
@@ -83,8 +72,21 @@ class AttendanceHistoryScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: InkWell(
-        onTap: () {
-          print("object");
+        onTap: () async {
+          // Show month/year picker
+          final DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: selectedDate,
+            firstDate: DateTime(2020),
+            lastDate: DateTime.now(),
+            initialDatePickerMode: DatePickerMode.year,
+          );
+
+          if (picked != null) {
+            setState(() {
+              selectedDate = DateTime(picked.year, picked.month, 1);
+            });
+          }
         },
         child: Container(
           height: 50,
@@ -102,7 +104,7 @@ class AttendanceHistoryScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Text(
-                    "October 2025",
+                    _formatMonthYear(selectedDate),
                     style: CustomTheme().superSmallFont(
                       Colors.black,
                       null,
@@ -119,7 +121,25 @@ class AttendanceHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _summaryCard(BuildContext context) {
+  String _formatMonthYear(DateTime date) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return "${months[date.month - 1]} ${date.year}";
+  }
+
+  Widget _summaryCard(BuildContext context, AttendanceSummary summary) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
       child: Container(
@@ -138,11 +158,15 @@ class AttendanceHistoryScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _summaryItem("Absent", absent.toString(), context),
-                _summaryItem("Late Clock In", lateClockIn.toString(), context),
+                _summaryItem("Absent", summary.absent.toString(), context),
+                _summaryItem(
+                  "Late Clock In",
+                  summary.lateClockIn.toString(),
+                  context,
+                ),
                 _summaryItem(
                   "Early Clock In",
-                  earlyClockIn.toString(),
+                  summary.earlyClockIn.toString(),
                   context,
                 ),
               ],
@@ -151,9 +175,9 @@ class AttendanceHistoryScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _summaryItem("Present", present.toString(), context),
-                _summaryItem("On Time", onTime.toString(), context),
-                _summaryItem("Overtime", overtime.toString(), context),
+                _summaryItem("Present", summary.present.toString(), context),
+                _summaryItem("On Time", summary.onTime.toString(), context),
+                _summaryItem("Overtime", summary.overtime.toString(), context),
               ],
             ),
           ],
