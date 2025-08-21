@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.hr_attendance_tracker"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13599879"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
