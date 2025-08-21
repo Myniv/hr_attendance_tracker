@@ -44,6 +44,13 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              FloatingActionButton(
+                onPressed: () {
+                  context.read<AttendanceHistoryProvider>().addDummyData();
+                },
+                child: Icon(Icons.data_usage),
+                tooltip: "Add Dummy Data",
+              ),
               _selectDate(context),
               _summaryCard(context, summary),
               ListView.builder(
@@ -73,7 +80,6 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
       padding: const EdgeInsets.all(16.0),
       child: InkWell(
         onTap: () async {
-          // Show month/year picker
           final DateTime? picked = await showDatePicker(
             context: context,
             initialDate: selectedDate,
