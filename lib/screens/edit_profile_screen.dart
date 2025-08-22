@@ -50,6 +50,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_isInitialized) {
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
+      profileProvider.getProfileData();
+      _isInitialized = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
     final phoneFormatter = MaskTextInputFormatter(
