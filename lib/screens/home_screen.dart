@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
@@ -45,6 +48,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _welcomeText(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -52,7 +57,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi, ${Profile().name} 👋',
+              'Hi, ${profileProvider.profile.name} 👋',
               style: CustomTheme().largeFont(
                 Colors.white,
                 FontWeight.normal,
@@ -71,7 +76,9 @@ class HomeScreen extends StatelessWidget {
         ),
         CircleAvatar(
           radius: 35,
-          backgroundImage: AssetImage('assets/images/profile.png'),
+          backgroundImage: profileProvider.profile.profilePicturePath != null
+              ? FileImage(File(profileProvider.profile.profilePicturePath!))
+              : AssetImage('assets/images/profile.png'),
         ),
       ],
     );

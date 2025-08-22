@@ -110,8 +110,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? "Edit your personal details below"
                                   : "Edit your work details below",
                               style: _customTheme.mediumFont(
-                                CustomTheme.colorLightBrown,
-                                FontWeight.w500,
+                                CustomTheme.colorBrown,
+                                FontWeight.bold,
                                 context,
                               ),
                               textAlign: TextAlign.center,
@@ -291,73 +291,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (ctx) {
-                                    return AlertDialog(
-                                      backgroundColor: CustomTheme.whiteButNot,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: CustomTheme.borderRadius,
-                                      ),
-                                      title: Text(
-                                        "Reset Form?",
-                                        style: _customTheme.mediumFont(
-                                          CustomTheme.colorBrown,
-                                          FontWeight.w700,
-                                          context,
-                                        ),
-                                      ),
-                                      content: Text(
-                                        "Are you sure you want to reset all changes?",
-                                        style: _customTheme.smallFont(
-                                          CustomTheme.colorLightBrown,
-                                          FontWeight.w500,
-                                          context,
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(ctx).pop(),
-                                          child: Text(
-                                            "Cancel",
-                                            style: _customTheme.smallFont(
-                                              CustomTheme.colorLightBrown,
-                                              FontWeight.w600,
-                                              context,
-                                            ),
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            profileProvider.reset();
-                                            Navigator.of(ctx).pop();
-                                          },
-                                          style: ElevatedButton.styleFrom(
+                              onPressed: profileProvider.isLoading
+                                  ? null
+                                  : () {
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (ctx) {
+                                          return AlertDialog(
                                             backgroundColor:
-                                                Colors.red.shade400,
-                                            foregroundColor: Colors.white,
+                                                CustomTheme.whiteButNot,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                                  CustomTheme.borderRadius,
                                             ),
-                                          ),
-                                          child: Text(
-                                            'Reset',
-                                            style: _customTheme.smallFont(
-                                              Colors.white,
-                                              FontWeight.w700,
-                                              context,
+                                            title: Text(
+                                              "Reset Form?",
+                                              style: _customTheme.mediumFont(
+                                                CustomTheme.colorBrown,
+                                                FontWeight.w700,
+                                                context,
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
+                                            content: Text(
+                                              "Are you sure you want to reset all changes?",
+                                              style: _customTheme.smallFont(
+                                                CustomTheme.colorLightBrown,
+                                                FontWeight.w500,
+                                                context,
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(ctx).pop(),
+                                                child: Text(
+                                                  "Cancel",
+                                                  style: _customTheme.smallFont(
+                                                    CustomTheme.colorLightBrown,
+                                                    FontWeight.w600,
+                                                    context,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  profileProvider.reset();
+                                                  Navigator.of(ctx).pop();
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.red.shade400,
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Reset',
+                                                  style: _customTheme.smallFont(
+                                                    Colors.white,
+                                                    FontWeight.w700,
+                                                    context,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
                               icon: Icon(Icons.refresh_rounded, size: 20),
                               label: Text('Reset'),
                               style: ElevatedButton.styleFrom(
@@ -378,7 +384,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           SizedBox(width: 16),
                           Expanded(
-                            flex: 2,
                             child: ElevatedButton.icon(
                               onPressed: profileProvider.isLoading
                                   ? null
@@ -393,15 +398,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                                         profileProvider.setIsLoading(false);
 
-                                        if (context.mounted) {
-                                          Navigator.pop(context);
-                                          _customTheme.customScaffoldMessage(
-                                            context: context,
-                                            message: widget.isPersonal
-                                                ? "Personal information updated successfully!"
-                                                : "Work information updated successfully!",
-                                          );
-                                        }
+                                        Navigator.pop(context);
+                                        _customTheme.customScaffoldMessage(
+                                          context: context,
+                                          message: widget.isPersonal
+                                              ? "Personal information updated successfully!"
+                                              : "Work information updated successfully!",
+                                        );
                                       }
                                     },
                               icon: profileProvider.isLoading

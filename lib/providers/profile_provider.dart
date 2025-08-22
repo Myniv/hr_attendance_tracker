@@ -61,9 +61,10 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> pickDate(BuildContext context, bool isDob) async {
     final DateTime initialDate;
-    
+
     if (isDob) {
-      initialDate = profile.dob ?? DateTime.now().subtract(Duration(days: 6570));
+      initialDate =
+          profile.dob ?? DateTime.now().subtract(Duration(days: 6570));
     } else {
       initialDate = profile.dateOfJoining ?? DateTime.now();
     }
@@ -71,10 +72,10 @@ class ProfileProvider extends ChangeNotifier {
     final picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(1950), 
+      firstDate: DateTime(1950),
       lastDate: DateTime.now().add(Duration(days: 365)),
     );
-    
+
     if (picked != null) {
       if (isDob) {
         setDOB(picked);
@@ -86,14 +87,13 @@ class ProfileProvider extends ChangeNotifier {
 
   void getProfileData() {
     if (_isDataLoaded) return;
-    
+
     nameController.text = profile.name ?? '';
     emailController.text = profile.email ?? '';
     phoneController.text = profile.phone ?? '';
-    employeeIdController.text = profile.employeeId != null && profile.employeeId! > 0 
-        ? profile.employeeId.toString() 
+    employeeIdController.text = profile.employeeId != null
+        ? profile.employeeId.toString()
         : '';
-
     _isDataLoaded = true;
     notifyListeners();
   }
@@ -103,15 +103,15 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   void saveProfile() {
-    profile.name = nameController.text.trim();
-    profile.email = emailController.text.trim();
-    profile.phone = phoneController.text.trim();
-    
-    final employeeIdText = employeeIdController.text.trim();
+    profile.name = nameController.text;
+    profile.email = emailController.text;
+    profile.phone = phoneController.text;
+
+    final employeeIdText = employeeIdController.text;
     if (employeeIdText.isNotEmpty) {
       profile.employeeId = int.tryParse(employeeIdText) ?? 0;
     }
-    
+
     notifyListeners();
   }
 
@@ -128,14 +128,14 @@ class ProfileProvider extends ChangeNotifier {
       dob: sourceProfile.dob,
       profilePicturePath: sourceProfile.profilePicturePath,
     );
-    
+
     nameController.text = profile.name ?? '';
     emailController.text = profile.email ?? '';
     phoneController.text = profile.phone ?? '';
-    employeeIdController.text = profile.employeeId != null && profile.employeeId! > 0 
-        ? profile.employeeId.toString() 
+    employeeIdController.text = profile.employeeId != null
+        ? profile.employeeId.toString()
         : '';
-    
+
     _isDataLoaded = true;
     notifyListeners();
   }

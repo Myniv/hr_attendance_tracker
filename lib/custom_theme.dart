@@ -239,8 +239,7 @@ class CustomTheme {
     return Container(
       decoration: BoxDecoration(borderRadius: CustomTheme.borderRadius),
       child: DropdownButtonFormField<T>(
-        // itemHeight: 100,
-        // menuMaxHeight: 100,
+        isDense: false,
         value: value,
         items: items
             .map(
