@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,14 +10,40 @@ import 'package:hr_attendance_tracker/models/profile.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  // const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-  DateTime today = DateTime.now();
-  // DateTime today = DateTime(2025, 8, 11, 8, 45, 0);
+class _HomeScreenState extends State<HomeScreen> {
+  late DateTime today;
+  late String dayName;
+  late String monthName;
+  Timer? _timer;
 
-  var dayName = CustomTheme().formatDay(DateTime.now());
-  var monthName = CustomTheme().formatMonth(DateTime.now());
+  @override
+  void initState() {
+    super.initState();
+    _updateDateTime();
+    // Start the timer to update every second
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _updateDateTime();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel timer when widget is disposed
+    super.dispose();
+  }
+
+  void _updateDateTime() {
+    setState(() {
+      today = DateTime.now();
+      dayName = CustomTheme().formatDay(today);
+      monthName = CustomTheme().formatMonth(today);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +137,8 @@ class HomeScreen extends StatelessWidget {
         final minutes = durationWorked.inMinutes % 60;
         final seconds = durationWorked.inSeconds % 60;
 
-        hoursWorked = "$hours:$minutes:$seconds";
+        hoursWorked =
+            "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
         record.hoursWorked = double.parse(
           (durationWorked.inMinutes / 60).toStringAsFixed(2),
         );
@@ -118,6 +146,16 @@ class HomeScreen extends StatelessWidget {
         if (record.outTime != null) {
           isClockOut = true;
           clockOutTime = record.outTime!;
+
+          // Calculate final worked duration if clocked out
+          final finalDurationWorked = record.outTime!.difference(
+            record.inTime!,
+          );
+          final finalHours = finalDurationWorked.inHours;
+          final finalMinutes = finalDurationWorked.inMinutes % 60;
+          final finalSeconds = finalDurationWorked.inSeconds % 60;
+          hoursWorked =
+              "${finalHours.toString().padLeft(2, '0')}:${finalMinutes.toString().padLeft(2, '0')}:${finalSeconds.toString().padLeft(2, '0')}";
         }
         break;
       }
@@ -256,8 +294,6 @@ class HomeScreen extends StatelessWidget {
                                 builder: (_) => AttendanceHistoryScreen(),
                               ),
                             );
-                            isClockOut = true;
-                            clockOutTime = today;
                           },
                           child: Text(
                             'Clock Out',
