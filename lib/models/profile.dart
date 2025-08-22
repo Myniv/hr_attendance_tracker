@@ -1,14 +1,26 @@
 class Profile {
-  var name = "Mulyana N";
-  var email = "mulyanan@solecode.id";
-  var phone = "08123456789";
-  var address = "Tangerang, Indonesia";
-  var dob = "26/10/2002";
-  var department = "IT Department";
-  var position = "Flutter Developer";
-  var location = "Jakarta";
-  var employeeId = "2011500457";
-  var dateOfJoining = "22/10/2024";
-  var bio =
-      "Passionate mobile developer with 3+ years experience in Flutter and React Native. Love creating beautiful and functional mobile applications.";
+  String? name;
+  String? email;
+  String? phone;
+  DateTime? dob;
+  String? department;
+  String? position;
+  String? location;
+  int? employeeId;
+  DateTime dateOfJoining;
+  String? profilePicturePath;
+
+  Profile({
+    this.name = "Mulyana N",
+    this.email = "mulyanan@solecode.id",
+    this.phone = "+62 857-7030-2069",
+    DateTime? dob,
+    this.department = "IT Department",
+    this.position = "Flutter Developer",
+    this.location = "Tangerang",
+    this.employeeId = 2011500457,
+    DateTime? dateOfJoining,
+    this.profilePicturePath,
+  }) : dob = dob ?? DateTime(1990, 1, 1),
+       dateOfJoining = dateOfJoining ?? DateTime(2020, 4, 1);
 }
