@@ -12,20 +12,16 @@ class CustomTheme {
     Radius.circular(15),
   );
 
-  // Helper method to get responsive font size
   double _getResponsiveFontSize(BuildContext context, double baseFontSize) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Use the smaller dimension to maintain aspect ratio
     final shortestSide = screenWidth < screenHeight
         ? screenWidth
         : screenHeight;
 
-    // Base scale factor (assuming 375px width as baseline - iPhone SE/8 width)
     final scaleFactor = shortestSide / 375.0;
 
-    // Apply scale factor with min/max bounds to prevent too small or too large text
     return (baseFontSize * scaleFactor).clamp(
       baseFontSize * 0.8,
       baseFontSize * 1.5,
@@ -37,7 +33,7 @@ class CustomTheme {
     FontWeight? fontWeight,
     BuildContext? context,
   ]) {
-    double fontSize = 12; // Caption/Small text
+    double fontSize = 12;
     if (context != null) {
       fontSize = _getResponsiveFontSize(context, 12);
     }

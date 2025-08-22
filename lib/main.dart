@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
 import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
@@ -12,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AttendanceHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MainApp(),
     ),
