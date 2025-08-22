@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:intl/intl.dart';
 
 class CustomTheme {
   static const Color backgroundScreenColor = Color(0xFF1F1301);
@@ -158,5 +163,282 @@ class CustomTheme {
       "December",
     ];
     return months[date.month - 1];
+  }
+
+  void customScaffoldMessage({
+    required BuildContext context,
+    required String message,
+    Color? backgroundColor,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: smallFont(Colors.white, FontWeight.w600, context),
+        ),
+        backgroundColor: backgroundColor ?? CustomTheme.colorLightBrown,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Widget customTextField({
+    required BuildContext context,
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    int maxLines = 1,
+  }) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: CustomTheme.borderRadius),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        maxLines: maxLines,
+        style: smallFont(CustomTheme.colorBrown, FontWeight.w500, context),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          labelStyle: superSmallFont(
+            CustomTheme.colorLightBrown,
+            FontWeight.w600,
+            context,
+          ),
+          hintStyle: superSmallFont(
+            CustomTheme.colorLightBrown.withOpacity(0.6),
+            FontWeight.w400,
+            context,
+          ),
+          filled: true,
+          fillColor: CustomTheme.whiteButNot,
+          border: OutlineInputBorder(
+            borderRadius: CustomTheme.borderRadius,
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+        validator: validator,
+      ),
+    );
+  }
+
+  Widget customDropdown<T>({
+    required BuildContext context,
+    required T? value,
+    required List<T> items,
+    required String label,
+    required void Function(T?) onChanged,
+    String? Function(T?)? validator,
+  }) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: CustomTheme.borderRadius),
+      child: DropdownButtonFormField<T>(
+        // itemHeight: 100,
+        // menuMaxHeight: 100,
+        value: value,
+        items: items
+            .map(
+              (item) => DropdownMenuItem<T>(
+                value: item,
+                child: Text(
+                  item.toString(),
+                  style: smallFont(
+                    CustomTheme.colorBrown,
+                    FontWeight.w500,
+                    context,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: superSmallFont(
+            CustomTheme.colorLightBrown,
+            FontWeight.w600,
+            context,
+          ),
+          filled: true,
+          fillColor: CustomTheme.whiteButNot,
+          border: OutlineInputBorder(
+            borderRadius: CustomTheme.borderRadius,
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+        dropdownColor: CustomTheme.whiteButNot,
+        onChanged: onChanged,
+        validator: validator,
+        icon: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: CustomTheme.colorLightBrown,
+          size: 28,
+        ),
+      ),
+    );
+  }
+
+  Widget customSelectDate({
+    required BuildContext context,
+    required String label,
+    required DateTime? selectedDate,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: CustomTheme.whiteButNot,
+        borderRadius: CustomTheme.borderRadius,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: smallFont(
+                    CustomTheme.colorLightBrown,
+                    FontWeight.w600,
+                    context,
+                  ),
+                ),
+                SizedBox(height: 8),
+                if (selectedDate != null) ...[
+                  Text(
+                    DateFormat('MMM dd, yyyy').format(selectedDate),
+                    style: superSmallFont(
+                      CustomTheme.colorBrown,
+                      FontWeight.w600,
+                      context,
+                    ),
+                  ),
+                ] else ...[
+                  Text(
+                    'No date selected',
+                    style: superSmallFont(
+                      CustomTheme.colorLightBrown,
+                      FontWeight.w400,
+                      context,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(width: 16),
+          ElevatedButton.icon(
+            onPressed: onPressed,
+            icon: Icon(Icons.calendar_month_rounded, size: 20),
+            label: Text('Select'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: CustomTheme.colorGold,
+              foregroundColor: CustomTheme.colorBrown,
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
+              textStyle: smallFont(
+                CustomTheme.colorBrown,
+                FontWeight.w700,
+                context,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget customSelectImage({
+    required BuildContext context,
+    required VoidCallback onPressed,
+    String? profilePicturePath,
+    String? label,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: CustomTheme.whiteButNot,
+        borderRadius: CustomTheme.borderRadius,
+        boxShadow: [
+          BoxShadow(
+            color: CustomTheme.colorBrown.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label ?? "Select Picture",
+                  style: smallFont(
+                    CustomTheme.colorLightBrown,
+                    FontWeight.w600,
+                    context,
+                  ),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: onPressed,
+                icon: Icon(Icons.add_photo_alternate_rounded, size: 20),
+                label: Text("Choose"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CustomTheme.colorGold,
+                  foregroundColor: CustomTheme.colorBrown,
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  textStyle: smallFont(
+                    CustomTheme.colorBrown,
+                    FontWeight.w700,
+                    context,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (profilePicturePath != null) ...[
+            SizedBox(height: 16),
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: CustomTheme.borderRadius,
+                border: Border.all(color: CustomTheme.colorGold, width: 2),
+              ),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: CustomTheme.borderRadius,
+                    child: Image.file(
+                      File(profilePicturePath),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
