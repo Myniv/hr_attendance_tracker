@@ -20,6 +20,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  final CustomTheme _customTheme = CustomTheme();
+  bool _isInitialized = false;
+
   final departmentsList = [
     'HR',
     'Finance',
@@ -49,7 +52,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
-
     final phoneFormatter = MaskTextInputFormatter(
       mask: '+62 ###-####-####',
       filter: {"#": RegExp(r'[0-9]')},
@@ -58,23 +60,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: CustomAppbar(
         title: widget.isPersonal ? "Edit Personal Info" : "Edit Work Info",
-        onBack: () {
-          Navigator.pop(context);
-        },
+        onBack: () => Navigator.pop(context),
         icon: Icons.arrow_back,
       ),
       backgroundColor: CustomTheme.backgroundScreenColor,
-      body: SizedBox(
+      body: Container(
         height: MediaQuery.of(context).size.height,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(20),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: CustomTheme.whiteButNot.withOpacity(0.95),
                 borderRadius: CustomTheme.borderRadius,
-                border: Border.all(color: Colors.blueAccent),
+                border: Border.all(color: CustomTheme.colorGold, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: CustomTheme.colorBrown.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
+                  ),
+                ],
               ),
               child: SingleChildScrollView(
                 child: Form(
@@ -82,38 +89,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.isPersonal
-                            ? "Personal Information"
-                            : "Work Information",
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              CustomTheme.colorGold.withOpacity(0.3),
+                              CustomTheme.colorYellow.withOpacity(0.2),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: CustomTheme.borderRadius,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              widget.isPersonal
+                                  ? "Edit your personal details below"
+                                  : "Edit your work details below",
+                              style: _customTheme.mediumFont(
+                                CustomTheme.colorLightBrown,
+                                FontWeight.w500,
+                                context,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.isPersonal
-                            ? "Update your personal details below."
-                            : "Update your work details below.",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 32),
 
                       if (widget.isPersonal) ...[
-                        TextFormField(
+                        _customTheme.customTextField(
+                          context: context,
                           controller: profileProvider.nameController,
-                          decoration: InputDecoration(
-                            labelText: "Full Name",
-                            hintText: "Enter your full name",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          label: "Full Name",
+                          hint: "Enter your full name",
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return "Please enter your name";
@@ -124,20 +137,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 20),
 
-                        TextFormField(
+                        _customTheme.customTextField(
+                          context: context,
                           controller: profileProvider.emailController,
-                          decoration: InputDecoration(
-                            labelText: "Email Address",
-                            hintText: "Enter your email address",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          label: "Email Address",
+                          hint: "Enter your email address",
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -151,20 +157,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 20),
 
-                        TextFormField(
+                        _customTheme.customTextField(
+                          context: context,
                           controller: profileProvider.phoneController,
-                          decoration: InputDecoration(
-                            labelText: "Phone Number",
-                            hintText: "Enter your phone number",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          label: "Phone Number",
+                          hint: "Enter your phone number",
                           keyboardType: TextInputType.phone,
                           inputFormatters: [phoneFormatter],
                           validator: (value) {
@@ -178,148 +177,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 24),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Date of Birth",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  if (profileProvider.profile.dob != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        'Selected: ${DateFormat('MMM dd, yyyy').format(profileProvider.profile.dob!)}',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  else
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        'No date selected',
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 20,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () =>
-                                  profileProvider.pickDate(context, true),
-                              child: Text(
-                                'Select Date',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
+                        _customTheme.customSelectDate(
+                          context: context,
+                          label: "Date of Birth",
+                          selectedDate: profileProvider.profile.dob,
+                          onPressed: () =>
+                              profileProvider.pickDate(context, true),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 24),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Profile Picture",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => profileProvider.pickImage(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 20,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                profileProvider.profile.profilePicturePath !=
-                                        null
-                                    ? "Change Image"
-                                    : "Choose Image",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
+                        _customTheme.customSelectImage(
+                          context: context,
+                          profilePicturePath:
+                              profileProvider.profile.profilePicturePath,
+                          onPressed: () => profileProvider.pickImage(),
+                          label: "Profile Picture",
                         ),
-                        if (profileProvider.profile.profilePicturePath != null)
-                          Container(
-                            margin: const EdgeInsets.only(top: 10),
-                            height: 200,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey[300]!),
-                            ),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    File(
-                                      profileProvider
-                                          .profile
-                                          .profilePicturePath!,
-                                    ),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                       ] else ...[
-                        TextFormField(
+                        _customTheme.customTextField(
+                          context: context,
                           controller: profileProvider.employeeIdController,
-                          decoration: InputDecoration(
-                            labelText: "Employee ID",
-                            hintText: "Enter your employee ID",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                          label: "Employee ID",
+                          hint: "Enter your employee ID",
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -334,99 +215,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 24),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Date of Joining",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  if (profileProvider.profile.dateOfJoining !=
-                                      null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        'Selected: ${DateFormat('MMM dd, yyyy').format(profileProvider.profile.dateOfJoining!)}',
-                                        style: TextStyle(
-                                          color: Colors.blueAccent,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  else
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        'No date selected',
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 20,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () =>
-                                  profileProvider.pickDate(context, false),
-                              child: Text(
-                                'Select Date',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
+                        _customTheme.customSelectDate(
+                          context: context,
+                          label: "Date of Joining",
+                          selectedDate: profileProvider.profile.dateOfJoining,
+                          onPressed: () =>
+                              profileProvider.pickDate(context, false),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 20),
 
-                        DropdownButtonFormField<String>(
+                        _customTheme.customDropdown<String>(
+                          context: context,
                           value:
                               profileProvider.profile.department?.isNotEmpty ==
                                   true
                               ? profileProvider.profile.department
                               : null,
-                          items: departmentsList
-                              .map(
-                                (dept) => DropdownMenuItem<String>(
-                                  value: dept,
-                                  child: Text(dept),
-                                ),
-                              )
-                              .toList(),
-                          decoration: InputDecoration(
-                            labelText: "Department",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            profileProvider.setDepartment(value);
-                          },
+                          items: departmentsList,
+                          label: "Department",
+                          onChanged: (value) =>
+                              profileProvider.setDepartment(value),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please select a department';
@@ -434,34 +244,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 20),
 
-                        DropdownButtonFormField<String>(
+                        _customTheme.customDropdown<String>(
+                          context: context,
                           value:
                               profileProvider.profile.position?.isNotEmpty ==
                                   true
                               ? profileProvider.profile.position
                               : null,
-                          items: positionsList
-                              .map(
-                                (pos) => DropdownMenuItem<String>(
-                                  value: pos,
-                                  child: Text(pos),
-                                ),
-                              )
-                              .toList(),
-                          decoration: InputDecoration(
-                            labelText: "Position",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            profileProvider.setPosition(value);
-                          },
+                          items: positionsList,
+                          label: "Position",
+                          onChanged: (value) =>
+                              profileProvider.setPosition(value),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please select a position';
@@ -469,34 +264,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 20),
 
-                        DropdownButtonFormField<String>(
+                        _customTheme.customDropdown<String>(
+                          context: context,
                           value:
                               profileProvider.profile.location?.isNotEmpty ==
                                   true
                               ? profileProvider.profile.location
                               : null,
-                          items: locationList
-                              .map(
-                                (loc) => DropdownMenuItem<String>(
-                                  value: loc,
-                                  child: Text(loc),
-                                ),
-                              )
-                              .toList(),
-                          decoration: InputDecoration(
-                            labelText: "Location",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: CustomTheme.borderRadius,
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            profileProvider.setLocation(value);
-                          },
+                          items: locationList,
+                          label: "Location",
+                          onChanged: (value) =>
+                              profileProvider.setLocation(value),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please select a location';
@@ -505,137 +285,159 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           },
                         ),
                       ],
-                      const SizedBox(height: 30),
 
+                      SizedBox(height: 40),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          ElevatedButton.icon(
-                            icon: Icon(
-                              Icons.refresh,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                                horizontal: 20,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) {
-                                  return AlertDialog(
-                                    title: Text("Reset Form?"),
-                                    content: Text(
-                                      "Are you sure you want to reset all changes?",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        child: Text("Cancel"),
-                                        onPressed: () =>
-                                            Navigator.of(ctx).pop(),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (ctx) {
+                                    return AlertDialog(
+                                      backgroundColor: CustomTheme.whiteButNot,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: CustomTheme.borderRadius,
                                       ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.redAccent,
-                                        ),
-                                        onPressed: () {
-                                          profileProvider.reset();
-                                          Navigator.of(ctx).pop();
-                                        },
-                                        child: Text(
-                                          'Reset',
-                                          style: TextStyle(color: Colors.white),
+                                      title: Text(
+                                        "Reset Form?",
+                                        style: _customTheme.mediumFont(
+                                          CustomTheme.colorBrown,
+                                          FontWeight.w700,
+                                          context,
                                         ),
                                       ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            label: Text(
-                              'Reset',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                      content: Text(
+                                        "Are you sure you want to reset all changes?",
+                                        style: _customTheme.smallFont(
+                                          CustomTheme.colorLightBrown,
+                                          FontWeight.w500,
+                                          context,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(ctx).pop(),
+                                          child: Text(
+                                            "Cancel",
+                                            style: _customTheme.smallFont(
+                                              CustomTheme.colorLightBrown,
+                                              FontWeight.w600,
+                                              context,
+                                            ),
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            profileProvider.reset();
+                                            Navigator.of(ctx).pop();
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.red.shade400,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Reset',
+                                            style: _customTheme.smallFont(
+                                              Colors.white,
+                                              FontWeight.w700,
+                                              context,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.refresh_rounded, size: 20),
+                              label: Text('Reset'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red.shade400,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
+                                textStyle: _customTheme.smallFont(
+                                  Colors.white,
+                                  FontWeight.w700,
+                                  context,
+                                ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          ElevatedButton.icon(
-                            icon: profileProvider.isLoading
-                                ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.save,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.greenAccent[700],
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                                horizontal: 20,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: profileProvider.isLoading
-                                ? null
-                                : () async {
-                                    if (profileProvider.validateProfile()) {
-                                      profileProvider.setIsLoading(true);
-                                      profileProvider.saveProfile();
+                          SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton.icon(
+                              onPressed: profileProvider.isLoading
+                                  ? null
+                                  : () async {
+                                      if (profileProvider.validateProfile()) {
+                                        profileProvider.setIsLoading(true);
+                                        profileProvider.saveProfile();
 
-                                      await Future.delayed(
-                                        Duration(seconds: 2),
-                                      );
-
-                                      profileProvider.setIsLoading(false);
-
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              widget.isPersonal
-                                                  ? "Personal information updated successfully!"
-                                                  : "Work information updated successfully!",
-                                            ),
-                                            backgroundColor: Colors.green,
-                                            duration: Duration(seconds: 3),
-                                          ),
+                                        await Future.delayed(
+                                          Duration(seconds: 2),
                                         );
+
+                                        profileProvider.setIsLoading(false);
+
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                          _customTheme.customScaffoldMessage(
+                                            context: context,
+                                            message: widget.isPersonal
+                                                ? "Personal information updated successfully!"
+                                                : "Work information updated successfully!",
+                                          );
+                                        }
                                       }
-                                    }
-                                  },
-                            label: Text(
-                              'Update',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                    },
+                              icon: profileProvider.isLoading
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: CustomTheme.colorBrown,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Icon(Icons.save_rounded, size: 20),
+                              label: Text(
+                                profileProvider.isLoading
+                                    ? 'Saving...'
+                                    : 'Update Profile',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: CustomTheme.colorGold,
+                                foregroundColor: CustomTheme.colorBrown,
+                                padding: EdgeInsets.symmetric(vertical: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 6,
+                                textStyle: _customTheme.smallFont(
+                                  CustomTheme.colorBrown,
+                                  FontWeight.w700,
+                                  context,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
+                      SizedBox(height: 20),
                     ],
                   ),
                 ),

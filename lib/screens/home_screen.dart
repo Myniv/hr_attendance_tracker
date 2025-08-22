@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
@@ -206,11 +205,9 @@ class HomeScreen extends StatelessWidget {
 
               onPressed: () {
                 context.read<AttendanceHistoryProvider>().clockIn(today);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Clock In successfully'),
-                    backgroundColor: Colors.green,
-                  ),
+                CustomTheme().customScaffoldMessage(
+                  context: context,
+                  message: 'Clock In successfully',
                 );
                 Navigator.push(
                   context,
@@ -223,7 +220,7 @@ class HomeScreen extends StatelessWidget {
               isClockIn: isClockIn,
               onPressed: () {
                 showDialog(
-                  context: context, 
+                  context: context,
                   builder: (ctx) {
                     return AlertDialog(
                       title: Text("Clock Out"),
@@ -242,11 +239,9 @@ class HomeScreen extends StatelessWidget {
                               today,
                             );
                             Navigator.of(ctx).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Clock Out successfully'),
-                                backgroundColor: Colors.green,
-                              ),
+                            CustomTheme().customScaffoldMessage(
+                              context: context,
+                              message: 'Clock Out successfully',
                             );
                             Navigator.push(
                               context,
@@ -282,36 +277,61 @@ class HomeScreen extends StatelessWidget {
           MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
         );
       }),
-      menuItem(Icons.access_time, 'History', const Color.fromARGB(255, 83, 255, 67), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
-      }),
-      menuItem(Icons.access_time, 'History', const Color.fromARGB(255, 95, 67, 255), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
-      }),
-      menuItem(Icons.access_time, 'History', const Color.fromARGB(255, 255, 67, 102), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
-      }),
-      menuItem(Icons.access_time, 'History', const Color.fromARGB(255, 67, 158, 255), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
-      }),
-      menuItem(Icons.access_time, 'History', const Color.fromARGB(255, 236, 67, 255), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
-      }),
+      menuItem(
+        Icons.access_time,
+        'History',
+        const Color.fromARGB(255, 83, 255, 67),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          );
+        },
+      ),
+      menuItem(
+        Icons.access_time,
+        'History',
+        const Color.fromARGB(255, 95, 67, 255),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          );
+        },
+      ),
+      menuItem(
+        Icons.access_time,
+        'History',
+        const Color.fromARGB(255, 255, 67, 102),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          );
+        },
+      ),
+      menuItem(
+        Icons.access_time,
+        'History',
+        const Color.fromARGB(255, 67, 158, 255),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          );
+        },
+      ),
+      menuItem(
+        Icons.access_time,
+        'History',
+        const Color.fromARGB(255, 236, 67, 255),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          );
+        },
+      ),
       menuItem(Icons.access_time, 'History', const Color(0xFFFF7043), () {
         Navigator.push(
           context,

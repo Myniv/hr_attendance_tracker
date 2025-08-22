@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/screens/edit_profile_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
-import 'package:hr_attendance_tracker/models/profile.dart';
+import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
       body: SafeArea(
@@ -15,11 +20,30 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                buildProfileHeader(context),
+                buildProfileHeader(
+                  context,
+                  profileProvider.profile.name,
+                  profileProvider.profile.position,
+                  profileProvider.profile.profilePicturePath,
+                  profileProvider.profile.dob,
+                ),
                 SizedBox(height: 20),
-                buildProfileInfo(context),
+                buildProfileInfo(
+                  context,
+                  profileProvider.profile.name,
+                  profileProvider.profile.email,
+                  profileProvider.profile.phone,
+                  profileProvider.profile.dob,
+                ),
                 SizedBox(height: 20),
-                buildLocationInfo(context),
+                buildLocationInfo(
+                  context,
+                  profileProvider.profile.employeeId,
+                  profileProvider.profile.dateOfJoining,
+                  profileProvider.profile.department,
+                  profileProvider.profile.position,
+                  profileProvider.profile.location,
+                ),
               ],
             ),
           ),
@@ -28,11 +52,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProfileHeader(BuildContext context) {
-    final profile = Profile();
-    final today = DateTime.now();
-    final formattedDate = "${today.day}/${today.month}/${today.year}";
-
+  Widget buildProfileHeader(
+    BuildContext context,
+    String? name,
+    String? position,
+    String? profilePicturePath,
+    DateTime? dateOfBirth,
+  ) {
     return Container(
       padding: const EdgeInsets.all(10.0),
       height: 150,
@@ -50,7 +76,9 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/images/profile.png'),
+                  backgroundImage: profilePicturePath != null
+                      ? FileImage(File(profilePicturePath))
+                      : AssetImage('assets/images/profile.png'),
                 ),
                 const SizedBox(width: 20),
                 Column(
@@ -58,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      profile.name,
+                      name ?? "Unknown",
                       style: CustomTheme().smallFont(
                         Colors.white,
                         null,
@@ -67,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      profile.position,
+                      position ?? "Unknown",
                       style: CustomTheme().superSmallFont(
                         Colors.white,
                         FontWeight.normal,
@@ -76,7 +104,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      formattedDate,
+                      dateOfBirth != null
+                          ? "${dateOfBirth.day}/${dateOfBirth.month}/${dateOfBirth.year}"
+                          : "Unknown",
                       style: CustomTheme().superSmallFont(
                         Colors.white,
                         FontWeight.normal,
@@ -88,21 +118,26 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: Icon(Icons.edit, color: Colors.white),
-              onPressed: () {},
-            ),
-          ),
+          // Positioned(
+          //   top: 0,
+          //   right: 0,
+          //   child: IconButton(
+          //     icon: Icon(Icons.edit, color: Colors.white),
+          //     onPressed: () {},
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
-  Widget buildProfileInfo(BuildContext context) {
-    final profile = Profile();
+  Widget buildProfileInfo(
+    BuildContext context,
+    String? name,
+    String? email,
+    String? phone,
+    DateTime? dob,
+  ) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -130,17 +165,29 @@ class ProfileScreen extends StatelessWidget {
 
               IconButton(
                 icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfileScreen(isPersonal: true),
+                    ),
+                  );
+                },
               ),
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Name', profile.name, Icons.info, context),
-          buildInfoRow('Email', profile.email, Icons.email, context),
-          buildInfoRow('Phone Number', profile.phone, Icons.phone, context),
+          buildInfoRow('Name', name ?? "Unknown", Icons.info, context),
+          buildInfoRow('Email', email ?? "Unknown", Icons.email, context),
+          buildInfoRow(
+            'Phone Number',
+            phone ?? "Unknown",
+            Icons.phone,
+            context,
+          ),
           buildInfoRow(
             'Date of Birth',
-            profile.dob,
+            dob != null ? "${dob.day}/${dob.month}/${dob.year}" : "Unknown",
             Icons.calendar_month,
             context,
           ),
@@ -149,8 +196,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLocationInfo(BuildContext context) {
-    final profile = Profile();
+  Widget buildLocationInfo(
+    BuildContext context,
+    int? employeeId,
+    DateTime? dateOfJoining,
+    String? department,
+    String? position,
+    String? location,
+  ) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -178,28 +231,43 @@ class ProfileScreen extends StatelessWidget {
 
               IconButton(
                 icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditProfileScreen(isPersonal: false),
+                    ),
+                  );
+                },
               ),
             ],
           ),
           SizedBox(height: 5),
-          buildInfoRow('Employee Id', profile.employeeId, Icons.info, context),
+          buildInfoRow(
+            'Employee Id',
+            employeeId != null ? employeeId.toString() : "Unknown",
+            Icons.info,
+            context,
+          ),
           buildInfoRow(
             'Date Of Joining',
-            profile.dateOfJoining,
+            dateOfJoining != null
+                ? "${dateOfJoining.day}/${dateOfJoining.month}/${dateOfJoining.year}"
+                : "Unknown",
             Icons.date_range,
             context,
           ),
           buildInfoRow(
             'Department',
-            profile.department,
+            department ?? "Unknown",
             Icons.location_city,
             context,
           ),
-          buildInfoRow('Position', profile.position, Icons.build, context),
+          buildInfoRow('Position', position ?? "Unknown", Icons.build, context),
           buildInfoRow(
             'Location',
-            profile.location,
+            location != null ? location : "Unknown",
             Icons.location_pin,
             context,
           ),

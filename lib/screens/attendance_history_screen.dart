@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
-import 'package:hr_attendance_tracker/models/attendance_history.dart';
 import 'package:hr_attendance_tracker/models/attendance_summary.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
@@ -44,13 +43,13 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  context.read<AttendanceHistoryProvider>().addDummyData();
-                },
-                child: Icon(Icons.data_usage),
-                tooltip: "Add Dummy Data",
-              ),
+              // FloatingActionButton(
+              //   onPressed: () {
+              //     context.read<AttendanceHistoryProvider>().addDummyData();
+              //   },
+              //   tooltip: "Add Dummy Data",
+              //   child: Icon(Icons.data_usage),
+              // ),
               _selectDate(context),
               _summaryCard(context, summary),
               ListView.builder(
