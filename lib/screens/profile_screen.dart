@@ -81,12 +81,17 @@ class ProfileScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min, // shrink to fit children
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name ?? "Unknown",
-                      style: CustomTheme().smallFont(
-                        Colors.white,
-                        null,
-                        context,
+                    Container(
+                      width: 300,
+                      child: Text(
+                        name ?? "Unknown",
+                        style: CustomTheme().smallFont(
+                          Colors.white,
+                          null,
+                          context,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     const SizedBox(height: 5),

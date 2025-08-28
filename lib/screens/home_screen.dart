@@ -6,7 +6,6 @@ import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
-import 'package:hr_attendance_tracker/models/profile.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
 
@@ -25,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _updateDateTime();
-    // Start the timer to update every second
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _updateDateTime();
     });
@@ -33,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel timer when widget is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -83,12 +81,17 @@ class _HomeScreenState extends State<HomeScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hi, ${profileProvider.profile.name} 👋',
-              style: CustomTheme().largeFont(
-                Colors.white,
-                FontWeight.normal,
-                context,
+            Container(
+              width: 300,
+              child: Text(
+                'Hi, ${profileProvider.profile.name} 👋',
+                style: CustomTheme().largeFont(
+                  Colors.white,
+                  FontWeight.normal,
+                  context,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
             Text(
