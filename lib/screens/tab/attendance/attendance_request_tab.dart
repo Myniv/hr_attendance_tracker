@@ -37,13 +37,13 @@ class _AttendanceRequestTabState extends State<AttendanceRequestTab> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  context.read<AttendanceHistoryProvider>().addDummyData();
-                },
-                tooltip: "Add Dummy Data",
-                child: Icon(Icons.data_usage),
-              ),
+              // FloatingActionButton(
+              //   onPressed: () {
+              //     context.read<AttendanceHistoryProvider>().addDummyData();
+              //   },
+              //   tooltip: "Add Dummy Data",
+              //   child: Icon(Icons.data_usage),
+              // ),
               _selectDate(context),
               if (reqAttendance.isEmpty)
                 NoItem(

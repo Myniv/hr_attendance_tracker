@@ -65,7 +65,7 @@ class _AttendanceShiftTabState extends State<AttendanceShiftTab> {
                     // );
                     return InkWell(
                       onTap: () {},
-                      child: _absentCard(attendance.date, "Rejected", context),
+                      child: _absentCard(attendance.date, "Accepted", context),
                     );
                   },
                 ),
@@ -198,7 +198,7 @@ class _AttendanceShiftTabState extends State<AttendanceShiftTab> {
                       ),
                     ),
                     Text(
-                      "The Request Attendance has been rejected.",
+                      "The Request Shifting has been accepted.",
                       style: CustomTheme().smallFont(
                         CustomTheme.whiteButNot,
                         FontWeight.normal,
