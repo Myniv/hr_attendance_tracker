@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:hr_attendance_tracker/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
 import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
@@ -27,15 +28,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Sample Portfolio App",
-      theme: ThemeData(
-        scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
-      ),
+      // theme: ThemeData(
+      //   scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
+      // ),
+      debugShowCheckedModeBanner: false,
+      home: MainScreen(),
+      onGenerateRoute: AppRoutes.generateRoute,
+
       // home: Scaffold(
       //   appBar: CustomAppbar(),
       //   body: ProfilePage(),
       //   bottomNavigationBar: CustomBottomNavbar(),
       // ),
-      home: MainScreen(),
     );
   }
 }
@@ -67,11 +71,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: CustomAppbar(
           title: _titleScreen[_currentIndex],
         ), // AppBar(title: Text(_titleScreen[_currentIndex]),),
+        backgroundColor: CustomTheme.backgroundScreenColor,
         body: _screens[_currentIndex],
         bottomNavigationBar: CustomBottomNavbar(
           currentIndex: _currentIndex,
@@ -79,10 +83,6 @@ class _MainScreenState extends State<MainScreen> {
           icon: _iconScreen,
           onTap: _changeTab,
         ),
-      ),
-      theme: ThemeData(
-        scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
-      ),
-    );
+      );
   }
 }
