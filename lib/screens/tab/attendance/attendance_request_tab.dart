@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:hr_attendance_tracker/widgets/no_item.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
-import 'package:hr_attendance_tracker/models/attendance_summary.dart';
-import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
-class AttendanceAbsentTab extends StatefulWidget {
+
+class AttendanceRequestTab extends StatefulWidget {
   @override
-  State<AttendanceAbsentTab> createState() => _AttendanceAbsentTabState();
+  State<AttendanceRequestTab> createState() => _AttendanceRequestTabState();
 }
 
-class _AttendanceAbsentTabState extends State<AttendanceAbsentTab> {
+class _AttendanceRequestTabState extends State<AttendanceRequestTab> {
   DateTime selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AttendanceHistoryProvider>();
     final attHistory = provider.attHistory;
-
-    final summary = provider.getSummary(selectedDate);
 
     final filteredHistory = attHistory
         .where(
@@ -28,7 +26,7 @@ class _AttendanceAbsentTabState extends State<AttendanceAbsentTab> {
         )
         .toList();
 
-    final absent = filteredHistory
+    final reqAttendance = filteredHistory
         .where((record) => record.inTime == null)
         .toList();
 
@@ -47,25 +45,31 @@ class _AttendanceAbsentTabState extends State<AttendanceAbsentTab> {
                 child: Icon(Icons.data_usage),
               ),
               _selectDate(context),
-              ListView.builder(
-                itemCount: absent.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final attendance = absent[index];
-                  // return _attendanceCard(
-                  //   attendance.dayName,
-                  //   attendance.date,
-                  //   attendance.inTime,
-                  //   attendance.outTime,
-                  //   context,
-                  // );
-                  return InkWell(
-                    onTap: () {},
-                    child: _absentCard(attendance.date, "Rejected", context),
-                  );
-                },
-              ),
+              if (reqAttendance.isEmpty)
+                NoItem(
+                  title: "No Request Attendance Records",
+                  subTitle: "No records found for the selected date.",
+                )
+              else
+                ListView.builder(
+                  itemCount: reqAttendance.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final attendance = reqAttendance[index];
+                    // return _attendanceCard(
+                    //   attendance.dayName,
+                    //   attendance.date,
+                    //   attendance.inTime,
+                    //   attendance.outTime,
+                    //   context,
+                    // );
+                    return InkWell(
+                      onTap: () {},
+                      child: _absentCard(attendance.date, "Rejected", context),
+                    );
+                  },
+                ),
             ],
           ),
         ),
