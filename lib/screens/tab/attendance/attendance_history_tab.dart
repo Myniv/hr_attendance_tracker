@@ -5,14 +5,28 @@ import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/attendance_summary.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
-class AttendanceHistoryScreen extends StatefulWidget {
+class AttendanceHistoryTab extends StatefulWidget {
   @override
-  State<AttendanceHistoryScreen> createState() =>
-      _AttendanceHistoryScreenState();
+  State<AttendanceHistoryTab> createState() => _AttendanceHistoryTabState();
 }
 
-class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
+class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
   DateTime selectedDate = DateTime.now();
+  // bool _initialized = false;
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   if (!_initialized) {
+  //     context.read<AttendanceHistoryProvider>().addDummyData();
+  //     _initialized = true;
+  //   }
+  // }
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   context.read<AttendanceHistoryProvider>().addDummyData();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +45,11 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
 
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
-      appBar: CustomAppbar(
-        title: "Attendance History",
-        onBack: () {
-          Navigator.pop(context);
-        },
-        icon: Icons.arrow_back,
-      ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
+      body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // FloatingActionButton(
-              //   onPressed: () {
-              //     context.read<AttendanceHistoryProvider>().addDummyData();
-              //   },
-              //   tooltip: "Add Dummy Data",
-              //   child: Icon(Icons.data_usage),
-              // ),
               _selectDate(context),
               _summaryCard(context, summary),
               ListView.builder(
