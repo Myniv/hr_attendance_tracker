@@ -9,13 +9,23 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canPop = Navigator.of(context).canPop();
+
     return AppBar(
       backgroundColor: CustomTheme.colorBrown,
-      leading: IconButton(
-        icon: Icon(icon, color: Colors.white),
-        onPressed: onBack,
-      ),
       title: Text(title, style: TextStyle(color: Colors.white)),
+      leading: canPop
+          ? IconButton(
+              onPressed: onBack,
+              icon: Icon(icon),
+              color: Colors.white,
+            )
+          : Builder(
+              builder: (context) => IconButton(
+                onPressed: () => Scaffold.of(context).openDrawer(),
+                icon: Icon(Icons.menu, color: Colors.white),
+              ),
+            ),
       // actions: [
       //   IconButton(
       //     icon: Icon(Icons.edit, color: Colors.white),

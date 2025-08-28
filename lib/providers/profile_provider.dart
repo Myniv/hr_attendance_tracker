@@ -66,7 +66,7 @@ class ProfileProvider extends ChangeNotifier {
       initialDate =
           profile.dob ?? DateTime.now().subtract(Duration(days: 6570));
     } else {
-      initialDate = profile.dateOfJoining ?? DateTime.now();
+      initialDate = profile.dateOfJoining;
     }
 
     final picked = await showDatePicker(
