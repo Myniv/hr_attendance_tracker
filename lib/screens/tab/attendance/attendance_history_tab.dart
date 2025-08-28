@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:hr_attendance_tracker/widgets/no_item.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/attendance_summary.dart';
-import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 
 class AttendanceHistoryTab extends StatefulWidget {
   @override
@@ -22,11 +22,12 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
   //     _initialized = true;
   //   }
   // }
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   context.read<AttendanceHistoryProvider>().addDummyData();
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<AttendanceHistoryProvider>().addDummyData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,21 +53,28 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
             children: [
               _selectDate(context),
               _summaryCard(context, summary),
-              ListView.builder(
-                itemCount: filteredHistory.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final attendance = filteredHistory[index];
-                  return _attendanceCard(
-                    attendance.dayName,
-                    attendance.date,
-                    attendance.inTime,
-                    attendance.outTime,
-                    context,
-                  );
-                },
-              ),
+              if (attHistory.isEmpty) ...[
+                NoItem(
+                  title: "No Attendance Records",
+                  subTitle: "No records found for the selected date.",
+                ),
+              ] else ...[
+                ListView.builder(
+                  itemCount: filteredHistory.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final attendance = filteredHistory[index];
+                    return _attendanceCard(
+                      attendance.dayName,
+                      attendance.date,
+                      attendance.inTime,
+                      attendance.outTime,
+                      context,
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ),

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
-import 'package:hr_attendance_tracker/screens/attendance_screen.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';

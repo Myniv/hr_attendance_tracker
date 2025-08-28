@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
-import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_absent_tab.dart';
+import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_request_tab.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
-import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
+import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_shift_tab.dart';
 
 class AttendanceScreen extends StatelessWidget {
   @override
@@ -19,26 +19,58 @@ class AttendanceScreen extends StatelessWidget {
             tabs: [
               Tab(
                 icon: Icon(
-                  Icons.phone_android,
+                  Icons.history,
                   size: 28,
                   color: CustomTheme.whiteButNot,
                 ),
-              ),
-              Tab(
-                icon: Icon(Icons.web, size: 28, color: CustomTheme.whiteButNot),
+                child: Text(
+                  "Log",
+                  style: CustomTheme().superSmallFont(
+                    CustomTheme.whiteButNot,
+                    FontWeight.normal,
+                    context,
+                  ),
+                ),
               ),
               Tab(
                 icon: Icon(
-                  Icons.design_services,
+                  Icons.upload_file,
                   size: 28,
                   color: CustomTheme.whiteButNot,
+                ),
+                child: Text(
+                  "Attendance",
+                  style: CustomTheme().superSmallFont(
+                    CustomTheme.whiteButNot,
+                    FontWeight.normal,
+                    context,
+                  ),
+                ),
+              ),
+              Tab(
+                icon: Icon(
+                  Icons.assignment_turned_in_outlined,
+                  size: 28,
+                  color: CustomTheme.whiteButNot,
+                ),
+                child: Text(
+                  "Shift",
+                  style: CustomTheme().superSmallFont(
+                    CustomTheme.whiteButNot,
+                    FontWeight.normal,
+                    context,
+                  ),
                 ),
               ),
             ],
           ),
         ),
         body: TabBarView(
-          children: [AttendanceHistoryTab(), AttendanceAbsentTab()],
+          children: [
+            AttendanceHistoryTab(),
+            AttendanceRequestTab(),
+            AttendanceShiftTab(),
+          ],
         ),
         // bottomNavigationBar: BottomNavigationBar(
         //   currentIndex: _selectedBottomNavIndex,
