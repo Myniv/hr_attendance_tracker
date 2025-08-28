@@ -3,13 +3,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:hr_attendance_tracker/screens/attendance_screen.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
-import 'package:hr_attendance_tracker/screens/attendance_history_screen.dart';
+import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 
 class HomeScreen extends StatefulWidget {
+  final void Function(int) onTabSelected; // <-- add this
+
+  HomeScreen({required this.onTabSelected}); // <-- constructor
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -150,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
           isClockOut = true;
           clockOutTime = record.outTime!;
 
-          // Calculate final worked duration if clocked out
           final finalDurationWorked = record.outTime!.difference(
             record.inTime!,
           );
@@ -257,10 +261,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   context: context,
                   message: 'Clock In successfully',
                 );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
+                // );
+                widget.onTabSelected(1);
               },
             ),
           ] else if (!isClockOut) ...[
@@ -291,12 +296,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               context: context,
                               message: 'Clock Out successfully',
                             );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AttendanceHistoryScreen(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (_) => AttendanceScreen(),
+                            //   ),
+                            // );
+                            widget.onTabSelected(1);
                           },
                           child: Text(
                             'Clock Out',
@@ -318,10 +324,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _menu(BuildContext context) {
     final menuItems = [
       menuItem(Icons.access_time, 'History', const Color(0xFFFF7043), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
+        // );
+        widget.onTabSelected(1);
       }),
       menuItem(
         Icons.access_time,
@@ -330,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+            MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
           );
         },
       ),
@@ -341,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+            MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
           );
         },
       ),
@@ -352,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+            MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
           );
         },
       ),
@@ -363,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
         () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+            MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
           );
         },
       ),
@@ -374,20 +381,20 @@ class _HomeScreenState extends State<HomeScreen> {
         () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+            MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
           );
         },
       ),
       menuItem(Icons.access_time, 'History', const Color(0xFFFF7043), () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
         );
       }),
       menuItem(Icons.access_time, 'History', const Color(0xFFFF7043), () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
+          MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
         );
       }),
     ];

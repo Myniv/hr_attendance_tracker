@@ -3,6 +3,7 @@ import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/routes.dart';
+import 'package:hr_attendance_tracker/screens/attendance_screen.dart';
 import 'package:hr_attendance_tracker/widgets/custom_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
@@ -61,30 +62,35 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  final List<String> _titleScreen = ["Home", "Profile"];
-  final List<IconData> _iconScreen = [Icons.home, Icons.person];
-  final List<Widget> _screens = [
-    HomeScreen(),
-    // AttendanceHistoryScreen(),
-    ProfileScreen(),
-    // PortofolioScreen(),
+  final List<String> _titleScreen = ["Home", "Attendance", "Profile"];
+  final List<IconData> _iconScreen = [
+    Icons.home,
+    Icons.access_time,
+    Icons.person,
   ];
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _screens = [
+      HomeScreen(onTabSelected: _changeTab),
+      AttendanceScreen(),
+      // AttendanceHistoryScreen(),
+      ProfileScreen(),
+      // PortofolioScreen(),
+    ];
     return Scaffold(
-        appBar: CustomAppbar(
-          title: _titleScreen[_currentIndex],
-        ), // AppBar(title: Text(_titleScreen[_currentIndex]),),
-        backgroundColor: CustomTheme.backgroundScreenColor,
-        body: _screens[_currentIndex],
-        bottomNavigationBar: CustomBottomNavbar(
-          currentIndex: _currentIndex,
-          title: _titleScreen,
-          icon: _iconScreen,
-          onTap: _changeTab,
-        ),
-        drawer: CustomDrawer(),
-      );
+      appBar: CustomAppbar(
+        title: _titleScreen[_currentIndex],
+      ), // AppBar(title: Text(_titleScreen[_currentIndex]),),
+      backgroundColor: CustomTheme.backgroundScreenColor,
+      body: _screens[_currentIndex],
+      bottomNavigationBar: CustomBottomNavbar(
+        currentIndex: _currentIndex,
+        title: _titleScreen,
+        icon: _iconScreen,
+        onTap: _changeTab,
+      ),
+      drawer: CustomDrawer(),
+    );
   }
 }

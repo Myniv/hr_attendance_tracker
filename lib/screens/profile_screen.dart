@@ -81,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min, // shrink to fit children
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       width: 300,
                       child: Text(
                         name ?? "Unknown",
@@ -265,7 +265,7 @@ class ProfileScreen extends StatelessWidget {
           buildInfoRow('Position', position ?? "Unknown", Icons.build, context),
           buildInfoRow(
             'Location',
-            location != null ? location : "Unknown",
+            location ?? "Unknown",
             Icons.location_pin,
             context,
           ),
