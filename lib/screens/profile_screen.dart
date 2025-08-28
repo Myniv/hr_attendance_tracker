@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hr_attendance_tracker/screens/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
@@ -12,40 +11,37 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileProvider = context.watch<ProfileProvider>();
-    return Scaffold(
-      backgroundColor: CustomTheme.backgroundScreenColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                buildProfileHeader(
-                  context,
-                  profileProvider.profile.name,
-                  profileProvider.profile.position,
-                  profileProvider.profile.profilePicturePath,
-                  profileProvider.profile.dob,
-                ),
-                SizedBox(height: 20),
-                buildProfileInfo(
-                  context,
-                  profileProvider.profile.name,
-                  profileProvider.profile.email,
-                  profileProvider.profile.phone,
-                  profileProvider.profile.dob,
-                ),
-                SizedBox(height: 20),
-                buildLocationInfo(
-                  context,
-                  profileProvider.profile.employeeId,
-                  profileProvider.profile.dateOfJoining,
-                  profileProvider.profile.department,
-                  profileProvider.profile.position,
-                  profileProvider.profile.location,
-                ),
-              ],
-            ),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              buildProfileHeader(
+                context,
+                profileProvider.profile.name,
+                profileProvider.profile.position,
+                profileProvider.profile.profilePicturePath,
+                profileProvider.profile.dob,
+              ),
+              SizedBox(height: 20),
+              buildProfileInfo(
+                context,
+                profileProvider.profile.name,
+                profileProvider.profile.email,
+                profileProvider.profile.phone,
+                profileProvider.profile.dob,
+              ),
+              SizedBox(height: 20),
+              buildLocationInfo(
+                context,
+                profileProvider.profile.employeeId,
+                profileProvider.profile.dateOfJoining,
+                profileProvider.profile.department,
+                profileProvider.profile.position,
+                profileProvider.profile.location,
+              ),
+            ],
           ),
         ),
       ),
@@ -166,11 +162,10 @@ class ProfileScreen extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => EditProfileScreen(isPersonal: true),
-                    ),
+                    '/edit-profile',
+                    arguments: {'isPersonal': true},
                   );
                 },
               ),
@@ -232,12 +227,10 @@ class ProfileScreen extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          EditProfileScreen(isPersonal: false),
-                    ),
+                    '/edit-profile',
+                    arguments: {'isPersonal': false},
                   );
                 },
               ),

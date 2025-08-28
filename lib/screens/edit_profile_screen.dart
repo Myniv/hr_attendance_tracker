@@ -1,19 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
-import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final bool isPersonal;
-
-  const EditProfileScreen({Key? key, required this.isPersonal})
-    : super(key: key);
+  const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -50,8 +44,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
     if (!_isInitialized) {
       final profileProvider = Provider.of<ProfileProvider>(
@@ -65,6 +59,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final isPersonal = args['isPersonal'] as bool;
+
     final profileProvider = Provider.of<ProfileProvider>(context);
     final phoneFormatter = MaskTextInputFormatter(
       mask: '+62 ###-####-####',
@@ -73,7 +71,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: CustomAppbar(
-        title: widget.isPersonal ? "Edit Personal Info" : "Edit Work Info",
+        title: isPersonal ? "Edit Personal Info" : "Edit Work Info",
         onBack: () => Navigator.pop(context),
         icon: Icons.arrow_back,
       ),
@@ -120,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: Column(
                           children: [
                             Text(
-                              widget.isPersonal
+                              isPersonal
                                   ? "Edit your personal details below"
                                   : "Edit your work details below",
                               style: _customTheme.mediumFont(
@@ -135,7 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       SizedBox(height: 32),
 
-                      if (widget.isPersonal) ...[
+                      if (isPersonal) ...[
                         _customTheme.customTextField(
                           context: context,
                           controller: profileProvider.nameController,
@@ -415,7 +413,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         Navigator.pop(context);
                                         _customTheme.customScaffoldMessage(
                                           context: context,
-                                          message: widget.isPersonal
+                                          message: isPersonal
                                               ? "Personal information updated successfully!"
                                               : "Work information updated successfully!",
                                         );
