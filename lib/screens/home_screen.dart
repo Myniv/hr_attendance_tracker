@@ -4,15 +4,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
+import 'package:hr_attendance_tracker/widgets/carousel_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  final void Function(int) onTabSelected; // <-- add this
+  final void Function(int) onTabSelected;
 
-  HomeScreen({required this.onTabSelected}); // <-- constructor
+  HomeScreen({required this.onTabSelected});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -60,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _clockInOutBox(context),
             SizedBox(height: 20),
             _menu(context),
+            SizedBox(height: 20),
+            CarouselSlider(),
 
             // ElevatedButton(
             //   onPressed: () {
@@ -406,29 +409,28 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: CustomTheme.borderRadius,
       ),
-      child: SizedBox(
-        height: 250,
-        child: GridView.builder(
-          // shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 1,
-          ),
-          itemCount: menuItems.length,
-          itemBuilder: (context, index) {
-            final menuItem = menuItems[index];
-            return _menuItem(
-              menuItem['title'],
-              menuItem['icon'],
-              menuItem['iconColor'],
-              menuItem['backgroundColor'],
-              menuItem['onTap'],
-            );
-          },
+      child: GridView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 80,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.7,
         ),
+        itemCount: menuItems.length,
+        itemBuilder: (context, index) {
+          final menuItem = menuItems[index];
+          return _menuItem(
+            menuItem['title'],
+            menuItem['icon'],
+            menuItem['iconColor'],
+            menuItem['backgroundColor'],
+            menuItem['onTap'],
+          );
+        },
       ),
     );
   }
