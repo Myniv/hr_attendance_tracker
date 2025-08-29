@@ -32,6 +32,23 @@ class CustomTheme {
     );
   }
 
+  TextStyle superSmallFont2(
+    Color color, [
+    FontWeight? fontWeight,
+    BuildContext? context,
+  ]) {
+    double fontSize = 10;
+    if (context != null) {
+      fontSize = _getResponsiveFontSize(context, 10);
+    }
+
+    return TextStyle(
+      color: color,
+      fontWeight: fontWeight ?? FontWeight.bold,
+      fontSize: fontSize,
+    );
+  }
+
   TextStyle superSmallFont(
     Color color, [
     FontWeight? fontWeight,
