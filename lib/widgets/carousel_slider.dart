@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animated_item/animated_item.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
@@ -12,6 +14,29 @@ class CarouselSlider extends StatefulWidget {
 class _CarouselSliderState extends State<CarouselSlider> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Timer? _autoPlayTimer;
+
+  static const Duration _autoPlayDuration = Duration(seconds: 4);
+  static const Duration _animationDuration = Duration(milliseconds: 500);
+
+  void _startAutoPlay() {
+    _autoPlayTimer = Timer.periodic(_autoPlayDuration, (timer) {
+      if (_pageController.hasClients) {
+        final nextPage = (_currentPage + 1) % _banners.length;
+        _pageController.animateToPage(
+          nextPage,
+          duration: _animationDuration,
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoPlay();
+  }
 
   final List<Map<String, dynamic>> _banners = [
     {
