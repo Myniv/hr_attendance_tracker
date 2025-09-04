@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/widgets/no_item.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/models/attendance_summary.dart';
@@ -12,21 +13,26 @@ class AttendanceHistoryTab extends StatefulWidget {
 
 class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
   DateTime selectedDate = DateTime.now();
-  // bool _initialized = false;
+  bool _initialized = false;
 
   // @override
   // void didChangeDependencies() {
   //   super.didChangeDependencies();
   //   if (!_initialized) {
-  //     context.read<AttendanceHistoryProvider>().addDummyData();
+  //     context
+  //         .read<AttendanceHistoryProvider>()
+  //         .fetchAttendanceHistoryByEmployeeId();
   //     _initialized = true;
   //   }
   // }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    context.read<AttendanceHistoryProvider>().addDummyData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<AttendanceHistoryProvider>()
+          .fetchAttendanceHistoryByEmployeeId();
+    });
   }
 
   @override
@@ -36,48 +42,68 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
 
     final summary = provider.getSummary(selectedDate);
 
-    final filteredHistory = attHistory
-        .where(
-          (record) =>
-              record.date.year == selectedDate.year &&
-              record.date.month == selectedDate.month,
-        )
-        .toList();
+    // final filteredHistory = attHistory
+    //     .where(
+    //       (record) =>
+    //           record.date.year == selectedDate.year &&
+    //           record.date.month == selectedDate.month,
+    //     )
+    //     .toList();
+    final filteredHistory = attHistory.toList();
 
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _selectDate(context),
-              _summaryCard(context, summary),
-              if (attHistory.isEmpty) ...[
-                NoItem(
-                  title: "No Attendance Records",
-                  subTitle: "No records found for the selected date.",
+        child: provider.isLoading
+            ? Center(child: CircularProgressIndicator())
+            : provider.errorMessage != null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Error: ${provider.errorMessage}",
+                      style: TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => provider.refreshData(),
+                      child: Text("Retry"),
+                    ),
+                  ],
                 ),
-              ] else ...[
-                ListView.builder(
-                  itemCount: filteredHistory.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final attendance = filteredHistory[index];
-                    return _attendanceCard(
-                      attendance.dayName,
-                      attendance.date,
-                      attendance.inTime,
-                      attendance.outTime,
-                      context,
-                    );
-                  },
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _selectDate(context),
+                    _summaryCard(context, summary),
+                    if (attHistory.isEmpty) ...[
+                      NoItem(
+                        title: "No Attendance Records",
+                        subTitle: "No records found for the selected date.",
+                      ),
+                    ] else ...[
+                      ListView.builder(
+                        itemCount: filteredHistory.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final attendance = filteredHistory[index];
+                          return _attendanceCard(
+                            attendance.date,
+                            attendance.in_time,
+                            attendance.out_time,
+                            context,
+                          );
+                        },
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-            ],
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -234,7 +260,6 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
   }
 
   Widget _attendanceCard(
-    String day,
     DateTime? date,
     DateTime? inTime,
     DateTime? outTime,
@@ -265,7 +290,7 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      day,
+                      getDayName(date!),
                       style: CustomTheme().superSmallFont(
                         Colors.black,
                         null,
@@ -335,5 +360,10 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
         ),
       ),
     );
+  }
+
+  String getDayName(DateTime date) {
+    return DateFormat('EEEE').format(date); // Full name (e.g. Monday)
+    // return DateFormat('E').format(date); // Short name (e.g. Mon)
   }
 }

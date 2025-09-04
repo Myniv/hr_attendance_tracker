@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:hr_attendance_tracker/services/attendance_history_services.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:hr_attendance_tracker/widgets/carousel_slider.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late String dayName;
   late String monthName;
   Timer? _timer;
+  bool isClockIn = false;
+  bool isClockOut = false;
+  DateTime? clockInTime = null;
+  DateTime? clockOutTime = null;
+  late AttendanceHistoryServices _attendanceHistoryServices =
+      AttendanceHistoryServices();
 
   @override
   void initState() {
@@ -32,6 +39,20 @@ class _HomeScreenState extends State<HomeScreen> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _updateDateTime();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadClockStatus();
+  }
+
+  Future<void> _loadClockStatus() async {
+    isClockIn = await _attendanceHistoryServices.loadIsClockIn() ?? false;
+    isClockOut = await _attendanceHistoryServices.loadIsClockOut() ?? false;
+    clockInTime = await _attendanceHistoryServices.loadClockInTime();
+    clockOutTime = await _attendanceHistoryServices.loadClockOutTime();
+    setState(() {});
   }
 
   @override
@@ -58,21 +79,18 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _welcomeText(context),
             SizedBox(height: 20),
-            _clockInOutBox(context),
+            _clockInOutBox(context, isClockIn, isClockOut, clockInTime, clockOutTime),
             SizedBox(height: 20),
             _menu(context),
             SizedBox(height: 20),
             CarouselSlider(),
 
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (_) => AttendanceHistoryScreen()),
-            //     );
-            //   },
-            //   child: Text('History Attendance'),
-            // ),
+            ElevatedButton(
+              onPressed: () {
+                _attendanceHistoryServices.clearAllPreferences();
+              },
+              child: Text('History Attendance'),
+            ),
           ],
         ),
       ),
@@ -121,15 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _clockInOutBox(BuildContext context) {
+  Widget _clockInOutBox(BuildContext context, bool isClockIn, bool isClockOut, DateTime? clockInTime, DateTime? clockOutTime) {
     final hour = today.hour % 12 == 0 ? 12 : today.hour % 12;
     final minute = today.minute.toString().padLeft(2, '0');
     final period = today.hour >= 12 ? 'PM' : 'AM';
-
-    bool isClockIn = false;
-    bool isClockOut = false;
-    DateTime? clockInTime = null;
-    DateTime? clockOutTime = null;
 
     String? hoursWorked = null;
 
@@ -140,25 +153,25 @@ class _HomeScreenState extends State<HomeScreen> {
           record.date.month == today.month &&
           record.date.year == today.year) {
         isClockIn = true;
-        clockInTime = record.inTime;
+        clockInTime = record.in_time;
 
-        final durationWorked = today.difference(record.inTime!);
+        final durationWorked = today.difference(record.in_time!);
         final hours = durationWorked.inHours;
         final minutes = durationWorked.inMinutes % 60;
         final seconds = durationWorked.inSeconds % 60;
 
         hoursWorked =
             "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
-        record.hoursWorked = double.parse(
+        record.total_hours = double.parse(
           (durationWorked.inMinutes / 60).toStringAsFixed(2),
         );
 
-        if (record.outTime != null) {
+        if (record.out_time != null) {
           isClockOut = true;
-          clockOutTime = record.outTime!;
+          clockOutTime = record.out_time!;
 
-          final finalDurationWorked = record.outTime!.difference(
-            record.inTime!,
+          final finalDurationWorked = record.out_time!.difference(
+            record.in_time!,
           );
           final finalHours = finalDurationWorked.inHours;
           final finalMinutes = finalDurationWorked.inMinutes % 60;
@@ -236,9 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Text(
             isClockOut
-                ? "You Have Clocked Out Today at ${CustomTheme().formatTime(clockOutTime!)}"
+                ? "You Have Clocked Out Today at ${clockOutTime != null ? CustomTheme().formatTime(clockOutTime!) : 'Unknown time'}"
                 : isClockIn
-                ? "Since Clock In at ${CustomTheme().formatTime(clockInTime!)}"
+                ? "Since Clock In at ${clockInTime != null ? CustomTheme().formatTime(clockInTime!) : 'Unknown time'}"
                 : "Not Clock In Yet",
             style: CustomTheme().superSmallFont(
               isClockOut
@@ -412,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GridView.builder(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
-        
+
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
