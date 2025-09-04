@@ -26,18 +26,18 @@ class AttendanceSummary {
       absent = 0;
 
   void updateWithRecord(AttendanceHistory record) {
-    if (record.inTime != null) {
+    if (record.in_time != null) {
       present++;
 
-      if (record.inTime!.isAfter(finalClockIn)) {
+      if (record.in_time!.isAfter(finalClockIn)) {
         lateClockIn++;
-      } else if (record.inTime!.isBefore(workStart)) {
+      } else if (record.in_time!.isBefore(workStart)) {
         earlyClockIn++;
       } else {
         onTime++;
       }
 
-      if (record.outTime != null && record.outTime!.isAfter(clockOut)) {
+      if (record.out_time != null && record.out_time!.isAfter(clockOut)) {
         overtime++;
       }
     } else {

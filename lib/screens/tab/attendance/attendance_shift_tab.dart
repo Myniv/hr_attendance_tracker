@@ -26,7 +26,7 @@ class _AttendanceShiftTabState extends State<AttendanceShiftTab> {
         .toList();
 
     final reqShift = filteredHistory
-        .where((record) => record.outTime != null )
+        .where((record) => record.out_time != null )
         .toList();
 
     return Scaffold(

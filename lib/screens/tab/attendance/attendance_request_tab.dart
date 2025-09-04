@@ -27,7 +27,7 @@ class _AttendanceRequestTabState extends State<AttendanceRequestTab> {
         .toList();
 
     final reqAttendance = filteredHistory
-        .where((record) => record.inTime == null)
+        .where((record) => record.in_time == null)
         .toList();
 
     return Scaffold(

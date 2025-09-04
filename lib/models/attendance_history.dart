@@ -1,67 +1,40 @@
 class AttendanceHistory {
+  int? id;
   DateTime date;
-  DateTime? inTime;
-  DateTime? outTime;
-  double hoursWorked;
-  String dayName;
+  DateTime? in_time;
+  DateTime? out_time;
+  double? total_hours;
+  int? employee_id;
 
   AttendanceHistory({
+    this.id,
     required DateTime date,
-    DateTime? inTime,
-    DateTime? outTime,
-  }) : date = DateTime(date.year, date.month, date.day),
-       inTime = inTime != null
-           ? DateTime(
-               date.year,
-               date.month,
-               date.day,
-               inTime.hour,
-               inTime.minute,
-             )
-           : null,
-       outTime = outTime != null
-           ? DateTime(
-               date.year,
-               date.month,
-               date.day,
-               outTime.hour,
-               outTime.minute,
-             )
-           : null,
-       hoursWorked = (inTime != null && outTime != null)
-           ? _calculateHoursWorked(inTime, outTime)
-           : 0.0,
-       dayName = _getDayName(date);
+    this.in_time,
+    this.out_time,
+    this.total_hours,
+    this.employee_id,
+  }) : date = DateTime(date.year, date.month, date.day);
 
-  void setOutTime(DateTime newOutTime) {
-    outTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      newOutTime.hour,
-      newOutTime.minute,
+  factory AttendanceHistory.fromJson(Map<String, dynamic> json) {
+    return AttendanceHistory(
+      id: json['id'],
+      date: DateTime.parse(json['date']),
+      in_time: json['in_time'] != null ? DateTime.parse(json['in_time']) : null,
+      out_time:
+          json['out_time'] != null ? DateTime.parse(json['out_time']) : null,
+      total_hours: json['total_hours']?.toDouble(),
+      employee_id: json['employee_id'],
     );
-
-    if (inTime != null && outTime != null) {
-      hoursWorked = _calculateHoursWorked(inTime!, outTime!);
-    }
   }
 
-  static double _calculateHoursWorked(DateTime inTime, DateTime outTime) {
-    Duration diff = outTime.difference(inTime);
-    return diff.inMinutes / 60.0;
-  }
-
-  static String _getDayName(DateTime date) {
-    const days = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
-    return days[date.weekday - 1];
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'id': id,
+      'date': date.toIso8601String(),
+      'in_time': in_time?.toIso8601String(),
+      'out_time': out_time?.toIso8601String(),
+      'total_hours': total_hours,
+      'employee_id': employee_id,
+    };
   }
 }
