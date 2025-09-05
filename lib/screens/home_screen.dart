@@ -79,7 +79,13 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _welcomeText(context),
             SizedBox(height: 20),
-            _clockInOutBox(context, isClockIn, isClockOut, clockInTime, clockOutTime),
+            _clockInOutBox(
+              context,
+              isClockIn,
+              isClockOut,
+              clockInTime,
+              clockOutTime,
+            ),
             SizedBox(height: 20),
             _menu(context),
             SizedBox(height: 20),
@@ -89,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 _attendanceHistoryServices.clearAllPreferences();
               },
-              child: Text('History Attendance'),
+              child: Text('Clear Shared Preference'),
             ),
           ],
         ),
@@ -139,49 +145,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _clockInOutBox(BuildContext context, bool isClockIn, bool isClockOut, DateTime? clockInTime, DateTime? clockOutTime) {
+  Widget _clockInOutBox(
+    BuildContext context,
+    bool isClockIn,
+    bool isClockOut,
+    DateTime? clockInTime,
+    DateTime? clockOutTime,
+  ) {
     final hour = today.hour % 12 == 0 ? 12 : today.hour % 12;
     final minute = today.minute.toString().padLeft(2, '0');
     final period = today.hour >= 12 ? 'PM' : 'AM';
 
     String? hoursWorked = null;
 
-    final attHistory = context.watch<AttendanceHistoryProvider>().attHistory;
+    if (clockInTime != null) {
+      final durationWorked = today.difference(clockInTime!);
+      final hours = durationWorked.inHours;
+      final minutes = durationWorked.inMinutes % 60;
+      final seconds = durationWorked.inSeconds % 60;
 
-    for (var record in attHistory) {
-      if (record.date.day == today.day &&
-          record.date.month == today.month &&
-          record.date.year == today.year) {
-        isClockIn = true;
-        clockInTime = record.in_time;
+      hoursWorked =
+          "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
 
-        final durationWorked = today.difference(record.in_time!);
-        final hours = durationWorked.inHours;
-        final minutes = durationWorked.inMinutes % 60;
-        final seconds = durationWorked.inSeconds % 60;
-
+      if (clockOutTime != null) {
+        final finalDurationWorked = clockOutTime.difference(clockInTime);
+        final finalHours = finalDurationWorked.inHours;
+        final finalMinutes = finalDurationWorked.inMinutes % 60;
+        final finalSeconds = finalDurationWorked.inSeconds % 60;
         hoursWorked =
-            "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
-        record.total_hours = double.parse(
-          (durationWorked.inMinutes / 60).toStringAsFixed(2),
-        );
-
-        if (record.out_time != null) {
-          isClockOut = true;
-          clockOutTime = record.out_time!;
-
-          final finalDurationWorked = record.out_time!.difference(
-            record.in_time!,
-          );
-          final finalHours = finalDurationWorked.inHours;
-          final finalMinutes = finalDurationWorked.inMinutes % 60;
-          final finalSeconds = finalDurationWorked.inSeconds % 60;
-          hoursWorked =
-              "${finalHours.toString().padLeft(2, '0')}:${finalMinutes.toString().padLeft(2, '0')}:${finalSeconds.toString().padLeft(2, '0')}";
-        }
-        break;
+            "${finalHours.toString().padLeft(2, '0')}:${finalMinutes.toString().padLeft(2, '0')}:${finalSeconds.toString().padLeft(2, '0')}";
       }
     }
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       width: double.infinity,
@@ -271,16 +266,23 @@ class _HomeScreenState extends State<HomeScreen> {
               isClockIn: isClockIn,
 
               onPressed: () {
-                context.read<AttendanceHistoryProvider>().clockIn(today);
-                CustomTheme().customScaffoldMessage(
-                  context: context,
-                  message: 'Clock In successfully',
-                );
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (_) => AttendanceHistoryTab()),
-                // );
-                widget.onTabSelected(1);
+                if (context.read<AttendanceHistoryProvider>().errorMessage !=
+                    null) {
+                  CustomTheme().customScaffoldMessage(
+                    context: context,
+                    message: context
+                        .read<AttendanceHistoryProvider>()
+                        .errorMessage!,
+                    backgroundColor: Colors.red,
+                  );
+                } else {
+                  context.read<AttendanceHistoryProvider>().clockIn(today);
+                  CustomTheme().customScaffoldMessage(
+                    context: context,
+                    message: 'Clock In successfully',
+                  );
+                  widget.onTabSelected(1);
+                }
               },
             ),
           ] else if (!isClockOut) ...[
@@ -306,18 +308,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             context.read<AttendanceHistoryProvider>().clockOut(
                               today,
                             );
-                            Navigator.of(ctx).pop();
-                            CustomTheme().customScaffoldMessage(
-                              context: context,
-                              message: 'Clock Out successfully',
-                            );
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (_) => AttendanceScreen(),
-                            //   ),
-                            // );
-                            widget.onTabSelected(1);
+                            if (context
+                                    .read<AttendanceHistoryProvider>()
+                                    .errorMessage !=
+                                null) {
+                              CustomTheme().customScaffoldMessage(
+                                context: context,
+                                message: context
+                                    .read<AttendanceHistoryProvider>()
+                                    .errorMessage!,
+                                backgroundColor: Colors.red,
+                              );
+                            } else {
+                              Navigator.of(ctx).pop();
+                              CustomTheme().customScaffoldMessage(
+                                context: context,
+                                message: 'Clock Out successfully',
+                              );
+                              widget.onTabSelected(1);
+                            }
                           },
                           child: Text(
                             'Clock Out',
