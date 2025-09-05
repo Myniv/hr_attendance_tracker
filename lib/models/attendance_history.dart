@@ -16,17 +16,24 @@ class AttendanceHistory {
   }) : date = DateTime(date.year, date.month, date.day);
 
   factory AttendanceHistory.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate = DateTime.parse(json['date']);
+    DateTime dateOnly = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+    );
+
     return AttendanceHistory(
       id: json['id'],
-      date: DateTime.parse(json['date']),
+      date: dateOnly, 
       in_time: json['in_time'] != null ? DateTime.parse(json['in_time']) : null,
-      out_time:
-          json['out_time'] != null ? DateTime.parse(json['out_time']) : null,
+      out_time: json['out_time'] != null
+          ? DateTime.parse(json['out_time'])
+          : null,
       total_hours: json['total_hours']?.toDouble(),
       employee_id: json['employee_id'],
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,

@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
 
 import 'package:hr_attendance_tracker/models/attendance_history.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AttendanceHistoryServices {
-  static const String baseUrl = "http://10.0.2.2:7190/api/attendance/";
+  static const String baseUrl = "http://localhost:7190/api/attendance/";
+  // static const String baseUrl = "http://10.0.2.2:7190/api/attendance/";
+  // static const String baseUrl = "http://192.168.1.50:7190/api/attendance/";
 
   Future<List<AttendanceHistory>> getAllAttendance() async {
     try {
