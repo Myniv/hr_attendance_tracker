@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:hr_attendance_tracker/routes.dart';
 import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -11,6 +13,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileProvider = context.watch<ProfileProvider>();
+    final authProvider = context.watch<AuthProvider>();
 
     return Drawer(
       backgroundColor: CustomTheme.backgroundScreenColor,
@@ -76,14 +79,12 @@ class CustomDrawer extends StatelessWidget {
                             child: CircleAvatar(
                               radius: 50,
                               backgroundImage:
-                                  profileProvider.profile.profilePicturePath !=
+                                  profileProvider.profile?.profilePicturePath !=
                                       null
-                                  ? FileImage(
-                                      File(
-                                        profileProvider
-                                            .profile
-                                            .profilePicturePath!,
-                                      ),
+                                  ? NetworkImage(
+                                      profileProvider
+                                          .profile!
+                                          .profilePicturePath!,
                                     )
                                   : AssetImage('assets/images/profile.png'),
                             ),
@@ -94,7 +95,7 @@ class CustomDrawer extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  profileProvider.profile.name ?? "User",
+                                  profileProvider.profile?.name ?? "User",
                                   style: _theme.mediumFont(
                                     CustomTheme.colorBrown,
                                     FontWeight.w500,
@@ -105,7 +106,7 @@ class CustomDrawer extends StatelessWidget {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  profileProvider.profile.position ?? "HR",
+                                  profileProvider.profile?.position ?? "HR",
                                   style: _theme.smallFont(
                                     CustomTheme.colorBrown.withOpacity(0.7),
                                     FontWeight.bold,
@@ -149,6 +150,20 @@ class CustomDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, '/setting');
+                    },
+                  ),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.logout,
+                    title: 'Logout',
+                    onTap: () async {
+                      await authProvider.signOut();
+                      if (context.mounted) {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      }
                     },
                   ),
                 ],

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
+import 'package:hr_attendance_tracker/routes.dart';
 import 'package:hr_attendance_tracker/services/attendance_history_services.dart';
 import 'package:hr_attendance_tracker/widgets/button_clock_in_out.dart';
 import 'package:hr_attendance_tracker/widgets/carousel_slider.dart';
@@ -71,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -97,6 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: Text('Clear Shared Preference'),
             ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await authProvider.signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, AppRoutes.login);
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -115,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: 300,
               child: Text(
-                'Hi, ${profileProvider.profile.name} 👋',
+                'Hi, ${profileProvider.profile?.name} 👋',
                 style: CustomTheme().largeFont(
                   Colors.white,
                   FontWeight.normal,
@@ -137,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         CircleAvatar(
           radius: 35,
-          backgroundImage: profileProvider.profile.profilePicturePath != null
-              ? FileImage(File(profileProvider.profile.profilePicturePath!))
+          backgroundImage: profileProvider.profile?.profilePicturePath != null
+              ? FileImage(File(profileProvider.profile!.profilePicturePath!))
               : AssetImage('assets/images/profile.png'),
         ),
       ],
