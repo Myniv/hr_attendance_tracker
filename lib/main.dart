@@ -5,6 +5,8 @@ import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart
 import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/routes.dart';
+import 'package:hr_attendance_tracker/screens/admin/dashboard_screen.dart';
+import 'package:hr_attendance_tracker/screens/admin/profile_list_screen.dart';
 import 'package:hr_attendance_tracker/screens/attendance_screen.dart';
 import 'package:hr_attendance_tracker/screens/auth/auth_wrapper.dart';
 import 'package:hr_attendance_tracker/widgets/custom_drawer.dart';
@@ -95,13 +97,22 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _screens = [
+    final profileProvider = Provider.of<ProfileProvider>(context);
+
+    final List<Widget> _screensMember = [
       HomeScreen(onTabSelected: _changeTab),
       AttendanceScreen(),
-      // AttendanceHistoryScreen(),
       ProfileScreen(),
-      // PortofolioScreen(),
     ];
+    final List<Widget> _screensAdmin = [
+      DashboardScreen(),
+      AttendanceScreen(),
+      ProfileListScreen(),
+    ];
+
+    late final List<Widget> _screens = profileProvider.profile?.role == "admin"
+        ? _screensAdmin
+        : _screensMember;
     return Scaffold(
       appBar: CustomAppbar(
         title: _titleScreen[_currentIndex],

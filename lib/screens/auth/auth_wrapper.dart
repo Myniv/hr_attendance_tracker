@@ -11,13 +11,13 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, ProfileProvider>(
       builder: (context, authProvider, profileProvider, child) {
-        print("=== AuthWrapper Debug ===");
-        print("Auth initialized: ${authProvider.isInitialized}");
-        print("User: ${authProvider.user?.uid}");
-        print("Profile: ${profileProvider.profile?.uid}");
-        print("Profile loading: ${profileProvider.isLoading}");
-        print("Profile error: ${profileProvider.errorMessage}");
-        print("========================");
+        // print("=== AuthWrapper Debug ===");
+        // print("Auth initialized: ${authProvider.isInitialized}");
+        // print("User: ${authProvider.user?.uid}");
+        // print("Profile: ${profileProvider.profile?.uid}");
+        // print("Profile loading: ${profileProvider.isLoading}");
+        // print("Profile error: ${profileProvider.errorMessage}");
+        // print("========================");
         if (!authProvider.isInitialized) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -25,26 +25,26 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (authProvider.user != null) {
-          // if (profileProvider.profile == null && !profileProvider.isLoading) {
-          //   WidgetsBinding.instance.addPostFrameCallback((_) {
-          //     profileProvider.loadProfile(authProvider.user!.uid);
-          //   });
-          // }
+          if (profileProvider.profile == null && !profileProvider.isLoading) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              profileProvider.loadProfile(authProvider.user!.uid);
+            });
+          }
 
-          // if (profileProvider.profile == null && profileProvider.isLoading) {
-          //   return const Scaffold(
-          //     body: Center(
-          //       child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           CircularProgressIndicator(),
-          //           SizedBox(height: 16),
-          //           Text('Loading profile...'),
-          //         ],
-          //       ),
-          //     ),
-          //   );
-          // }
+          if (profileProvider.profile == null && profileProvider.isLoading) {
+            return const Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading profile...'),
+                  ],
+                ),
+              ),
+            );
+          }
 
           if (profileProvider.profile != null) {
             if (profileProvider.profile?.isNew == true ||
