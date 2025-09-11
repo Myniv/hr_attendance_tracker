@@ -20,6 +20,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isInitialized = false;
   String? _currentUid;
   String? _originalUid;
+  bool _isEditingProfile2 = false;
 
   final departmentsList = [
     'HR',
@@ -63,13 +64,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
       final args =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
       final String? uid = args?['uid'];
 
       if (uid != null) {
         _currentUid = uid;
-        context.read<ProfileProvider>().loadProfile(uid);
+        _isEditingProfile2 = true;
+        print("EditProfileScreen: Editing profile2 for UID: $uid");
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _loadProfileData(profileProvider, uid);
+        });
+      } else {
+        _isEditingProfile2 = false;
+        print("EditProfileScreen: Editing current user profile");
+        _populateFormFields(profileProvider.profile, profileProvider);
       }
+
       _isInitialized = true;
+    }
+  }
+
+  void _loadProfileData(ProfileProvider profileProvider, String uid) {
+    var targetProfile = profileProvider.profile2;
+
+    if (targetProfile == null || targetProfile.uid != uid) {
+      try {
+        targetProfile = profileProvider.allProfiles.firstWhere(
+          (profile) => profile.uid == uid,
+        );
+        profileProvider.setProfile2(targetProfile);
+      } catch (e) {
+        print("Profile not found in allProfiles for UID: $uid");
+        return;
+      }
+    }
+    _populateFormFields(targetProfile, profileProvider);
+  }
+
+  void _populateFormFields(dynamic profile, ProfileProvider profileProvider) {
+    if (profile != null) {
+      profileProvider.nameController.text = profile.name ?? '';
+      profileProvider.emailController.text = profile.email ?? '';
+      profileProvider.phoneController.text = profile.phone ?? '';
+      profileProvider.employeeIdController.text = profile.employeeId != null
+          ? profile.employeeId.toString()
+          : '';
+
+      profileProvider.setDepartment(profile.department);
+      profileProvider.setPosition(profile.position);
+      profileProvider.setLocation(profile.location);
+      profileProvider.setDOB(profile.dob);
+      profileProvider.setDateOfJoining(profile.dateOfJoining);
     }
   }
 
@@ -83,10 +129,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  dynamic _getCurrentProfile(ProfileProvider profileProvider) {
+    return _isEditingProfile2
+        ? profileProvider.profile2
+        : profileProvider.profile;
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
-    final isNew = profileProvider.profile?.isNew;
+    final currentProfile = _getCurrentProfile(profileProvider);
+    final isNew = currentProfile?.isNew;
+
     final phoneFormatter = MaskTextInputFormatter(
       mask: '+62 ###-####-####',
       filter: {"#": RegExp(r'[0-9]')},
@@ -94,7 +148,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: CustomAppbar(
-        title: "Edit Personal Info",
+        title: _isEditingProfile2
+            ? "Edit ${currentProfile?.name ?? 'Profile'}"
+            : "Edit Personal Info",
         onBack: () => Navigator.pop(context),
         icon: Icons.arrow_back,
       ),
@@ -141,7 +197,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: Column(
                           children: [
                             Text(
-                              "Edit your personal details below",
+                              _isEditingProfile2
+                                  ? "Edit ${currentProfile?.name ?? 'profile'} details below"
+                                  : "Edit your personal details below",
                               style: _customTheme.mediumFont(
                                 CustomTheme.colorBrown,
                                 FontWeight.bold,
@@ -156,8 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       _customTheme.customSelectImage(
                         context: context,
-                        profilePicturePath:
-                            profileProvider.profile?.profilePicturePath,
+                        profilePicturePath: currentProfile?.profilePicturePath,
                         selectedImageFile: profileProvider.selectedImageFile,
                         onPressed: () => profileProvider.pickImage(),
                         label: "Profile Picture",
@@ -168,10 +225,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context: context,
                         controller: profileProvider.nameController,
                         label: "Full Name",
-                        hint: "Enter your full name",
+                        hint: "Enter full name",
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Please enter your name";
+                            return "Please enter name";
                           }
                           if (value.trim().length < 3) {
                             return "Name must be at least 3 characters";
@@ -185,11 +242,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context: context,
                         controller: profileProvider.emailController,
                         label: "Email Address",
-                        hint: "Enter your email address",
+                        hint: "Enter email address",
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Please enter your email";
+                            return "Please enter email";
                           }
                           if (!RegExp(
                             r'^[^@]+@[^@]+\.[^@]+',
@@ -205,12 +262,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context: context,
                         controller: profileProvider.phoneController,
                         label: "Phone Number",
-                        hint: "Enter your phone number",
+                        hint: "Enter phone number",
                         keyboardType: TextInputType.phone,
                         inputFormatters: [phoneFormatter],
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Please enter your phone number";
+                            return "Please enter phone number";
                           }
                           if (value.replaceAll(RegExp(r'[^\d]'), '').length <
                               10) {
@@ -224,7 +281,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _customTheme.customSelectDate(
                         context: context,
                         label: "Date of Birth",
-                        selectedDate: profileProvider.profile?.dob,
+                        selectedDate: currentProfile?.dob,
                         onPressed: () =>
                             profileProvider.pickDate(context, true),
                       ),
@@ -234,14 +291,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context: context,
                         controller: profileProvider.employeeIdController,
                         label: "Employee ID",
-                        hint: "Enter your employee ID",
+                        hint: "Enter employee ID",
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Please enter your employee ID";
+                            return "Please enter employee ID";
                           }
                           if (int.tryParse(value.trim()) == null) {
                             return "Employee ID must be a number";
@@ -254,7 +311,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _customTheme.customSelectDate(
                         context: context,
                         label: "Date of Joining",
-                        selectedDate: profileProvider.profile?.dateOfJoining,
+                        selectedDate: currentProfile?.dateOfJoining,
                         onPressed: () =>
                             profileProvider.pickDate(context, false),
                       ),
@@ -262,10 +319,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       _customTheme.customDropdown<String>(
                         context: context,
-                        value:
-                            profileProvider.profile?.department?.isNotEmpty ==
-                                true
-                            ? profileProvider.profile?.department
+                        value: currentProfile?.department?.isNotEmpty == true
+                            ? currentProfile?.department
                             : null,
                         items: departmentsList,
                         label: "Department",
@@ -282,10 +337,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       _customTheme.customDropdown<String>(
                         context: context,
-                        value:
-                            profileProvider.profile?.position?.isNotEmpty ==
-                                true
-                            ? profileProvider.profile?.position
+                        value: currentProfile?.position?.isNotEmpty == true
+                            ? currentProfile?.position
                             : null,
                         items: positionsList,
                         label: "Position",
@@ -302,10 +355,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       _customTheme.customDropdown<String>(
                         context: context,
-                        value:
-                            profileProvider.profile?.location?.isNotEmpty ==
-                                true
-                            ? profileProvider.profile?.location
+                        value: currentProfile?.location?.isNotEmpty == true
+                            ? currentProfile?.location
                             : null,
                         items: locationList,
                         label: "Location",
@@ -369,7 +420,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               ),
                                               ElevatedButton(
                                                 onPressed: () {
-                                                  // profileProvider.reset();
+                                                  // Reset form fields
+                                                  _populateFormFields(
+                                                    currentProfile,
+                                                    profileProvider,
+                                                  );
                                                   Navigator.of(ctx).pop();
                                                 },
                                                 style: ElevatedButton.styleFrom(
@@ -422,27 +477,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? null
                                   : () async {
                                       if (profileProvider.validateProfile()) {
-                                        profileProvider.updateProfile();
-
-                                        await Future.delayed(
-                                          Duration(seconds: 2),
+                                        await _saveProfile(
+                                          profileProvider,
+                                          currentProfile,
                                         );
-
-                                        _customTheme.customScaffoldMessage(
-                                          context: context,
-                                          message:
-                                              "Information updated successfully!",
-                                        );
-                                        if (isNew == true || isNew == null) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => MainScreen(),
-                                            ),
-                                          );
-                                        } else {
-                                          Navigator.pop(context);
-                                        }
                                       }
                                     },
                               icon: profileProvider.isLoading
@@ -488,5 +526,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveProfile(
+    ProfileProvider profileProvider,
+    dynamic currentProfile,
+  ) async {
+    try {
+      if (_isEditingProfile2) {
+        await profileProvider.updateProfile2();
+      } else {
+        await profileProvider.updateProfile();
+      }
+
+      await Future.delayed(Duration(seconds: 2));
+
+      _customTheme.customScaffoldMessage(
+        context: context,
+        message: "Information updated successfully!",
+      );
+
+      final isNew = currentProfile?.isNew;
+      if (isNew == true || isNew == null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => MainScreen()),
+        );
+      } else {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      _customTheme.customScaffoldMessage(
+        context: context,
+        message: "Failed to update profile: $e",
+        backgroundColor: Colors.red,
+      );
+    }
   }
 }

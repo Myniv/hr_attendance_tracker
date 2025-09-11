@@ -12,6 +12,9 @@ class ProfileProvider extends ChangeNotifier {
   Profile? _profile;
   Profile? get profile => _profile;
 
+  Profile? _profile2;
+  Profile? get profile2 => _profile2;
+
   List<Profile> _allProfiles = [];
   List<Profile> get allProfiles => _allProfiles;
 
@@ -67,6 +70,12 @@ class ProfileProvider extends ChangeNotifier {
 
   void setProfile(Profile profile) {
     _profile = profile;
+    _selectedImageFile = null;
+    notifyListeners();
+  }
+
+  void setProfile2(Profile profile) {
+    _profile2 = profile;
     _selectedImageFile = null;
     notifyListeners();
   }
@@ -234,6 +243,72 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("Error updating profile: $e");
+      _errorMessage = "Failed to update profile: $e";
+      notifyListeners();
+      rethrow;
+    } finally {
+      _setIsLoading(false);
+    }
+  }
+
+  Future<void> updateProfile2() async {
+    if (_profile2 == null) {
+      _errorMessage = "No profile2 loaded for editing";
+      notifyListeners();
+      return;
+    }
+
+    if (!profileKey.currentState!.validate()) return;
+
+    _setIsLoading(true);
+    try {
+      // Handle photo upload if there's a selected image
+      String? updatedPhotoPath = _profile2!.profilePicturePath;
+      if (_selectedImageFile != null) {
+        updatedPhotoPath = await _profileService.uploadProfilePhoto(
+          _profile2!.uid,
+          _selectedImageFile!,
+          _profile2!.profilePicturePath ?? '',
+        );
+      }
+
+      // Create updated profile with form data
+      final updated = Profile(
+        uid: _profile2!.uid,
+        name: nameController.text,
+        email: emailController.text,
+        role: _profile2!.role,
+        phone: phoneController.text,
+        dob: _profile2!.dob,
+        department: _profile2!.department,
+        position: _profile2!.position,
+        location: _profile2!.location,
+        employeeId:
+            int.tryParse(employeeIdController.text) ?? _profile2!.employeeId,
+        dateOfJoining: _profile2!.dateOfJoining,
+        profilePicturePath: updatedPhotoPath,
+        isNew: false,
+      );
+
+      // Update in database
+      await _profileService.updateUserProfile(updated);
+
+      // Update local state
+      _profile2 = updated;
+
+      // Also update in allProfiles list
+      final index = _allProfiles.indexWhere((p) => p.uid == updated.uid);
+      if (index != -1) {
+        _allProfiles[index] = updated;
+      }
+
+      _errorMessage = null;
+      _selectedImageFile = null;
+      notifyListeners();
+
+      print("Profile2 updated successfully: ${updated.name}");
+    } catch (e) {
+      print("Error updating profile2: $e");
       _errorMessage = "Failed to update profile: $e";
       notifyListeners();
       rethrow;

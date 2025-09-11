@@ -5,43 +5,128 @@ import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_isInitialized) {
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final String? uid = args?['uid'];
+
+      if (uid != null) {
+        print("Loading profile for UID: $uid");
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final profileProvider = context.read<ProfileProvider>();
+          try {
+            final selectedProfile = profileProvider.allProfiles.firstWhere(
+              (profile) => profile.uid == uid,
+            );
+            profileProvider.setProfile2(selectedProfile);
+            print("Profile loaded: ${selectedProfile.name}");
+          } catch (e) {
+            print("Profile not found for UID: $uid");
+          }
+        });
+      }
+      _isInitialized = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final profileProvider = context.watch<ProfileProvider>();
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String? uid = args?['uid'];
+
+    print("Profile 2: ${profileProvider.profile2?.name}");
+    print("Profile 1: ${profileProvider.profile?.name}");
+
+    var profile = uid != null
+        ? profileProvider.profile2
+        : profileProvider.profile;
+
+    if (profile == null && uid != null) {
+      return Scaffold(
+        backgroundColor: CustomTheme.backgroundScreenColor,
+        appBar: AppBar(
+          backgroundColor: CustomTheme.colorLightBrown,
+          foregroundColor: Colors.white,
+          title: Text('Profile'),
+        ),
+        body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildProfileHeader(
-                context,
-                profileProvider.profile?.name,
-                profileProvider.profile?.position,
-                profileProvider.profile?.profilePicturePath,
-                profileProvider.profile?.dob,
-              ),
-              SizedBox(height: 20),
-              buildProfileInfo(
-                context,
-                profileProvider.profile?.name,
-                profileProvider.profile?.email,
-                profileProvider.profile?.phone,
-                profileProvider.profile?.dob,
-              ),
-              SizedBox(height: 20),
-              buildLocationInfo(
-                context,
-                profileProvider.profile?.employeeId,
-                profileProvider.profile?.dateOfJoining,
-                profileProvider.profile?.department,
-                profileProvider.profile?.position,
-                profileProvider.profile?.location,
+              CircularProgressIndicator(color: CustomTheme.colorGold),
+              SizedBox(height: 16),
+              Text(
+                'Loading profile...',
+                style: CustomTheme().mediumFont(
+                  CustomTheme.colorBrown,
+                  FontWeight.w500,
+                  context,
+                ),
               ),
             ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: CustomTheme.backgroundScreenColor,
+      appBar: AppBar(
+        backgroundColor: CustomTheme.colorLightBrown,
+        foregroundColor: Colors.white,
+        title: Text(profile?.name ?? 'Profile'),
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                buildProfileHeader(
+                  context,
+                  profile?.name,
+                  profile?.position,
+                  profile?.profilePicturePath,
+                  profile?.dob,
+                ),
+                SizedBox(height: 20),
+                buildProfileInfo(
+                  context,
+                  profile?.name,
+                  profile?.email,
+                  profile?.phone,
+                  profile?.dob,
+                  profile?.uid,
+                ),
+                SizedBox(height: 20),
+                buildLocationInfo(
+                  context,
+                  profile?.employeeId,
+                  profile?.dateOfJoining,
+                  profile?.department,
+                  profile?.position,
+                  profile?.location,
+                  profile?.uid
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -56,77 +141,76 @@ class ProfileScreen extends StatelessWidget {
     DateTime? dateOfBirth,
   ) {
     return Container(
-      padding: const EdgeInsets.all(10.0),
-      height: 150,
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: CustomTheme.colorLightBrown,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: CustomTheme.borderRadius,
+        boxShadow: [
+          BoxShadow(
+            color: CustomTheme.colorBrown.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
-      child: Stack(
+      child: Row(
         children: [
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: CustomTheme.colorGold, width: 3),
+            ),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage:
+                  profilePicturePath != null && profilePicturePath.isNotEmpty
+                  ? NetworkImage(profilePicturePath)
+                  : AssetImage('assets/images/profile.png') as ImageProvider,
+              backgroundColor: CustomTheme.colorGold.withOpacity(0.3),
+              child: (profilePicturePath == null || profilePicturePath.isEmpty)
+                  ? Icon(Icons.person, size: 50, color: Colors.white)
+                  : null,
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: profilePicturePath != null
-                      ? NetworkImage(profilePicturePath)
-                      : AssetImage('assets/images/profile.png'),
+                Text(
+                  name ?? "Unknown",
+                  style: CustomTheme().mediumFont(
+                    Colors.white,
+                    FontWeight.w700,
+                    context,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
-                const SizedBox(width: 20),
-                Column(
-                  mainAxisSize: MainAxisSize.min, // shrink to fit children
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 300,
-                      child: Text(
-                        name ?? "Unknown",
-                        style: CustomTheme().smallFont(
-                          Colors.white,
-                          null,
-                          context,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      position ?? "Unknown",
-                      style: CustomTheme().superSmallFont(
-                        Colors.white,
-                        FontWeight.normal,
-                        context,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      dateOfBirth != null
-                          ? "${dateOfBirth.day}/${dateOfBirth.month}/${dateOfBirth.year}"
-                          : "Unknown",
-                      style: CustomTheme().superSmallFont(
-                        Colors.white,
-                        FontWeight.normal,
-                        context,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  position ?? "Unknown Position",
+                  style: CustomTheme().smallFont(
+                    Colors.white.withOpacity(0.9),
+                    FontWeight.w500,
+                    context,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  dateOfBirth != null
+                      ? "Born: ${dateOfBirth.day}/${dateOfBirth.month}/${dateOfBirth.year}"
+                      : "Birth date unknown",
+                  style: CustomTheme().superSmallFont(
+                    Colors.white.withOpacity(0.8),
+                    FontWeight.w400,
+                    context,
+                  ),
                 ),
               ],
             ),
           ),
-          // Positioned(
-          //   top: 0,
-          //   right: 0,
-          //   child: IconButton(
-          //     icon: Icon(Icons.edit, color: Colors.white),
-          //     onPressed: () {},
-          //   ),
-          // ),
         ],
       ),
     );
@@ -138,15 +222,20 @@ class ProfileScreen extends StatelessWidget {
     String? email,
     String? phone,
     DateTime? dob,
+    String? uid,
   ) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: CustomTheme.whiteButNot,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: CustomTheme.borderRadius,
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+          BoxShadow(
+            color: CustomTheme.colorBrown.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -157,27 +246,26 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'PERSONAL INFORMATION',
-                style: CustomTheme().smallFont(
+                style: CustomTheme().mediumFont(
                   CustomTheme.colorBrown,
-                  null,
+                  FontWeight.w700,
                   context,
                 ),
               ),
-
               IconButton(
-                icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
+                icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
                 onPressed: () {
                   Navigator.pushNamed(
                     context,
                     '/edit-profile',
-                    arguments: {'isPersonal': true},
+                    arguments: {'uid': uid},
                   );
                 },
               ),
             ],
           ),
-          SizedBox(height: 5),
-          buildInfoRow('Name', name ?? "Unknown", Icons.info, context),
+          SizedBox(height: 10),
+          buildInfoRow('Name', name ?? "Unknown", Icons.person, context),
           buildInfoRow('Email', email ?? "Unknown", Icons.email, context),
           buildInfoRow(
             'Phone Number',
@@ -188,7 +276,7 @@ class ProfileScreen extends StatelessWidget {
           buildInfoRow(
             'Date of Birth',
             dob != null ? "${dob.day}/${dob.month}/${dob.year}" : "Unknown",
-            Icons.calendar_month,
+            Icons.cake,
             context,
           ),
         ],
@@ -203,15 +291,20 @@ class ProfileScreen extends StatelessWidget {
     String? department,
     String? position,
     String? location,
+    String? uid,
   ) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: CustomTheme.whiteButNot,
         border: Border.all(color: CustomTheme.colorGold, width: 2),
         borderRadius: CustomTheme.borderRadius,
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+          BoxShadow(
+            color: CustomTheme.colorBrown.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -222,34 +315,33 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 'WORK INFORMATION',
-                style: CustomTheme().smallFont(
+                style: CustomTheme().mediumFont(
                   CustomTheme.colorBrown,
-                  null,
+                  FontWeight.w700,
                   context,
                 ),
               ),
-
               IconButton(
-                icon: Icon(Icons.edit, color: CustomTheme.colorBrown),
+                icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
                 onPressed: () {
                   Navigator.pushNamed(
                     context,
                     '/edit-profile',
-                    arguments: {'isPersonal': false},
+                    arguments: {'uid': uid},
                   );
                 },
               ),
             ],
           ),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
           buildInfoRow(
-            'Employee Id',
+            'Employee ID',
             employeeId != null ? employeeId.toString() : "Unknown",
-            Icons.info,
+            Icons.badge,
             context,
           ),
           buildInfoRow(
-            'Date Of Joining',
+            'Date of Joining',
             dateOfJoining != null
                 ? "${dateOfJoining.day}/${dateOfJoining.month}/${dateOfJoining.year}"
                 : "Unknown",
@@ -259,14 +351,14 @@ class ProfileScreen extends StatelessWidget {
           buildInfoRow(
             'Department',
             department ?? "Unknown",
-            Icons.location_city,
+            Icons.business,
             context,
           ),
-          buildInfoRow('Position', position ?? "Unknown", Icons.build, context),
+          buildInfoRow('Position', position ?? "Unknown", Icons.work, context),
           buildInfoRow(
             'Location',
             location ?? "Unknown",
-            Icons.location_pin,
+            Icons.location_on,
             context,
           ),
         ],
@@ -280,38 +372,41 @@ class ProfileScreen extends StatelessWidget {
     IconData iconF,
     BuildContext context,
   ) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: CustomTheme.colorBrown)),
-      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(iconF, color: CustomTheme.colorBrown),
-          SizedBox(width: 10),
-          SizedBox(
-            width: 300,
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: CustomTheme.colorGold.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(iconF, color: CustomTheme.colorBrown, size: 20),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            flex: 2,
             child: Text(
               label,
-              style: CustomTheme().superSmallFont(
+              style: CustomTheme().smallFont(
                 CustomTheme.colorLightBrown,
-                FontWeight.bold,
+                FontWeight.w600,
                 context,
               ),
             ),
           ),
+          SizedBox(width: 8),
           Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                value,
-                style: CustomTheme().superSmallFont(
-                  CustomTheme.colorLightBrown,
-                  FontWeight.normal,
-                  context,
-                ),
+            flex: 3,
+            child: Text(
+              value,
+              style: CustomTheme().smallFont(
+                CustomTheme.colorBrown,
+                FontWeight.w500,
+                context,
               ),
+              textAlign: TextAlign.end,
             ),
           ),
         ],
