@@ -1,22 +1,45 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
+import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/routes.dart';
 import 'package:hr_attendance_tracker/screens/attendance_screen.dart';
+import 'package:hr_attendance_tracker/screens/auth/auth_wrapper.dart';
 import 'package:hr_attendance_tracker/widgets/custom_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
 import 'package:hr_attendance_tracker/widgets/bottom_navbar.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 import 'package:hr_attendance_tracker/screens/profile_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      projectId: 'hr-attendance-tracker-471814', // Project ID
+      messagingSenderId: '654813655804', //Project Number
+      apiKey: 'AIzaSyCv9eLhtKcVUTpZRNPG3zjN8BSzelthLbY', //Web API Key
+      appId: '1:654813655804:android:a6d18e1158480b7ef6dd79',
+    ), // App ID
+  );
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: false,
+  );
+  await Supabase.initialize(
+    url: 'https://ltvskbkhdfgvkveqaxpg.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0dnNrYmtoZGZndmt2ZXFheHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjU3NjUsImV4cCI6MjA3MzEwMTc2NX0.i2YH6LvyAwkreZ11f-NbUkQBq7oQ5xuKHqe9sIEWhGE',
+  );
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AttendanceHistoryProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MainApp(),
     ),
@@ -34,7 +57,8 @@ class MainApp extends StatelessWidget {
       //   scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
       // ),
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      // home: MainScreen(),
+      home: AuthWrapper(),
       onGenerateRoute: AppRoutes.generateRoute,
 
       // home: Scaffold(

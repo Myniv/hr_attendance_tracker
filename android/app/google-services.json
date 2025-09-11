@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "654813655804",
+    "project_id": "hr-attendance-tracker-471814",
+    "storage_bucket": "hr-attendance-tracker-471814.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654813655804:android:a6d18e1158480b7ef6dd79",
+        "android_client_info": {
+          "package_name": "com.example.hr_attendance_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "654813655804-mitfv5r7bhc686hb6o91pqot7v1qgf6h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv9eLhtKcVUTpZRNPG3zjN8BSzelthLbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "654813655804-mitfv5r7bhc686hb6o91pqot7v1qgf6h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
