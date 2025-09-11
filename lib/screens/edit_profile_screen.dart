@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -16,6 +17,8 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final CustomTheme _customTheme = CustomTheme();
   bool _isInitialized = false;
+  String? _currentUid;
+  String? _originalUid;
 
   final departmentsList = [
     'HR',
@@ -46,14 +49,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _loadUid();
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     if (!_isInitialized) {
       final profileProvider = Provider.of<ProfileProvider>(
         context,
         listen: false,
       );
-      profileProvider.getProfileData();
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final String? uid = args?['uid'];
+
+      if (uid != null) {
+        _currentUid = uid;
+        context.read<ProfileProvider>().loadProfile(uid);
+      }
       _isInitialized = true;
+    }
+  }
+
+  void _loadUid() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final uid = await authProvider.loadUserUID();
+    if (uid != null) {
+      setState(() {
+        _originalUid = uid;
+      });
     }
   }
 
@@ -118,9 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: Column(
                           children: [
                             Text(
-                              isPersonal
-                                  ? "Edit your personal details below"
-                                  : "Edit your work details below",
+                              "Edit your personal details below",
                               style: _customTheme.mediumFont(
                                 CustomTheme.colorBrown,
                                 FontWeight.bold,
@@ -133,170 +156,170 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       SizedBox(height: 32),
 
-                      if (isPersonal) ...[
-                        _customTheme.customTextField(
-                          context: context,
-                          controller: profileProvider.nameController,
-                          label: "Full Name",
-                          hint: "Enter your full name",
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return "Please enter your name";
-                            }
-                            if (value.trim().length < 3) {
-                              return "Name must be at least 3 characters";
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
+                      _customTheme.customSelectImage(
+                        context: context,
+                        profilePicturePath:
+                            profileProvider.profile?.profilePicturePath,
+                        selectedImageFile: profileProvider.selectedImageFile,
+                        onPressed: () => profileProvider.pickImage(),
+                        label: "Profile Picture",
+                      ),
+                      SizedBox(height: 20),
 
-                        _customTheme.customTextField(
-                          context: context,
-                          controller: profileProvider.emailController,
-                          label: "Email Address",
-                          hint: "Enter your email address",
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return "Please enter your email";
-                            }
-                            if (!RegExp(
-                              r'^[^@]+@[^@]+\.[^@]+',
-                            ).hasMatch(value.trim())) {
-                              return 'Enter a valid email address';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
+                      _customTheme.customTextField(
+                        context: context,
+                        controller: profileProvider.nameController,
+                        label: "Full Name",
+                        hint: "Enter your full name",
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter your name";
+                          }
+                          if (value.trim().length < 3) {
+                            return "Name must be at least 3 characters";
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
 
-                        _customTheme.customTextField(
-                          context: context,
-                          controller: profileProvider.phoneController,
-                          label: "Phone Number",
-                          hint: "Enter your phone number",
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [phoneFormatter],
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return "Please enter your phone number";
-                            }
-                            if (value.replaceAll(RegExp(r'[^\d]'), '').length <
-                                10) {
-                              return "Please enter a valid phone number";
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 24),
+                      _customTheme.customTextField(
+                        context: context,
+                        controller: profileProvider.emailController,
+                        label: "Email Address",
+                        hint: "Enter your email address",
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter your email";
+                          }
+                          if (!RegExp(
+                            r'^[^@]+@[^@]+\.[^@]+',
+                          ).hasMatch(value.trim())) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
 
-                        _customTheme.customSelectDate(
-                          context: context,
-                          label: "Date of Birth",
-                          selectedDate: profileProvider.profile.dob,
-                          onPressed: () =>
-                              profileProvider.pickDate(context, true),
-                        ),
-                        SizedBox(height: 24),
+                      _customTheme.customTextField(
+                        context: context,
+                        controller: profileProvider.phoneController,
+                        label: "Phone Number",
+                        hint: "Enter your phone number",
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [phoneFormatter],
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter your phone number";
+                          }
+                          if (value.replaceAll(RegExp(r'[^\d]'), '').length <
+                              10) {
+                            return "Please enter a valid phone number";
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 24),
 
-                        _customTheme.customSelectImage(
-                          context: context,
-                          profilePicturePath:
-                              profileProvider.profile.profilePicturePath,
-                          onPressed: () => profileProvider.pickImage(),
-                          label: "Profile Picture",
-                        ),
-                      ] else ...[
-                        _customTheme.customTextField(
-                          context: context,
-                          controller: profileProvider.employeeIdController,
-                          label: "Employee ID",
-                          hint: "Enter your employee ID",
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return "Please enter your employee ID";
-                            }
-                            if (int.tryParse(value.trim()) == null) {
-                              return "Employee ID must be a number";
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 24),
+                      _customTheme.customSelectDate(
+                        context: context,
+                        label: "Date of Birth",
+                        selectedDate: profileProvider.profile?.dob,
+                        onPressed: () =>
+                            profileProvider.pickDate(context, true),
+                      ),
+                      SizedBox(height: 24),
 
-                        _customTheme.customSelectDate(
-                          context: context,
-                          label: "Date of Joining",
-                          selectedDate: profileProvider.profile.dateOfJoining,
-                          onPressed: () =>
-                              profileProvider.pickDate(context, false),
-                        ),
-                        SizedBox(height: 20),
+                      _customTheme.customTextField(
+                        context: context,
+                        controller: profileProvider.employeeIdController,
+                        label: "Employee ID",
+                        hint: "Enter your employee ID",
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Please enter your employee ID";
+                          }
+                          if (int.tryParse(value.trim()) == null) {
+                            return "Employee ID must be a number";
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 24),
 
-                        _customTheme.customDropdown<String>(
-                          context: context,
-                          value:
-                              profileProvider.profile.department?.isNotEmpty ==
-                                  true
-                              ? profileProvider.profile.department
-                              : null,
-                          items: departmentsList,
-                          label: "Department",
-                          onChanged: (value) =>
-                              profileProvider.setDepartment(value),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a department';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
+                      _customTheme.customSelectDate(
+                        context: context,
+                        label: "Date of Joining",
+                        selectedDate: profileProvider.profile?.dateOfJoining,
+                        onPressed: () =>
+                            profileProvider.pickDate(context, false),
+                      ),
+                      SizedBox(height: 20),
 
-                        _customTheme.customDropdown<String>(
-                          context: context,
-                          value:
-                              profileProvider.profile.position?.isNotEmpty ==
-                                  true
-                              ? profileProvider.profile.position
-                              : null,
-                          items: positionsList,
-                          label: "Position",
-                          onChanged: (value) =>
-                              profileProvider.setPosition(value),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a position';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
+                      _customTheme.customDropdown<String>(
+                        context: context,
+                        value:
+                            profileProvider.profile?.department?.isNotEmpty ==
+                                true
+                            ? profileProvider.profile?.department
+                            : null,
+                        items: departmentsList,
+                        label: "Department",
+                        onChanged: (value) =>
+                            profileProvider.setDepartment(value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a department';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
 
-                        _customTheme.customDropdown<String>(
-                          context: context,
-                          value:
-                              profileProvider.profile.location?.isNotEmpty ==
-                                  true
-                              ? profileProvider.profile.location
-                              : null,
-                          items: locationList,
-                          label: "Location",
-                          onChanged: (value) =>
-                              profileProvider.setLocation(value),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a location';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
+                      _customTheme.customDropdown<String>(
+                        context: context,
+                        value:
+                            profileProvider.profile?.position?.isNotEmpty ==
+                                true
+                            ? profileProvider.profile?.position
+                            : null,
+                        items: positionsList,
+                        label: "Position",
+                        onChanged: (value) =>
+                            profileProvider.setPosition(value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a position';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+
+                      _customTheme.customDropdown<String>(
+                        context: context,
+                        value:
+                            profileProvider.profile?.location?.isNotEmpty ==
+                                true
+                            ? profileProvider.profile?.location
+                            : null,
+                        items: locationList,
+                        label: "Location",
+                        onChanged: (value) =>
+                            profileProvider.setLocation(value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a location';
+                          }
+                          return null;
+                        },
+                      ),
 
                       SizedBox(height: 40),
                       Row(
@@ -348,7 +371,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               ),
                                               ElevatedButton(
                                                 onPressed: () {
-                                                  profileProvider.reset();
+                                                  // profileProvider.reset();
                                                   Navigator.of(ctx).pop();
                                                 },
                                                 style: ElevatedButton.styleFrom(
@@ -401,14 +424,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? null
                                   : () async {
                                       if (profileProvider.validateProfile()) {
-                                        profileProvider.setIsLoading(true);
-                                        profileProvider.saveProfile();
+                                        profileProvider.updateProfile();
 
                                         await Future.delayed(
                                           Duration(seconds: 2),
                                         );
-
-                                        profileProvider.setIsLoading(false);
 
                                         Navigator.pop(context);
                                         _customTheme.customScaffoldMessage(

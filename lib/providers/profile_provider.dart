@@ -1,60 +1,104 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
+import 'package:hr_attendance_tracker/services/profile_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final profileKey = GlobalKey<FormState>();
+  final ProfileService _profileService = ProfileService();
 
-  Profile profile = Profile();
+  Profile? _profile;
+  Profile? get profile => _profile;
+
+  List<Profile> _allProfiles = [];
+  List<Profile> get allProfiles => _allProfiles;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  bool _isUploadingPhoto = false;
+  bool get isUploadingPhoto => _isUploadingPhoto;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  File? _selectedImageFile;
+  File? get selectedImageFile => _selectedImageFile;
 
   final nameController = TextEditingController();
   final employeeIdController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
-  final picker = ImagePicker();
+  final _picker = ImagePicker();
 
-  bool isLoading = false;
   bool _isDataLoaded = false;
 
   void setDepartment(String? value) {
-    profile.department = value ?? '';
+    _profile?.department = value ?? '';
     notifyListeners();
   }
 
   void setPosition(String? value) {
-    profile.position = value ?? '';
+    _profile?.position = value ?? '';
     notifyListeners();
   }
 
   void setLocation(String? value) {
-    profile.location = value ?? '';
+    _profile?.location = value ?? '';
     notifyListeners();
   }
 
   void setDateOfJoining(DateTime? value) {
     if (value != null) {
-      profile.dateOfJoining = value;
+      _profile?.dateOfJoining = value;
       notifyListeners();
     }
   }
 
   void setDOB(DateTime? value) {
     if (value != null) {
-      profile.dob = value;
+      _profile?.dob = value;
       notifyListeners();
     }
   }
 
-  void setIsLoading(bool value) {
-    isLoading = value;
+  void setProfile(Profile profile) {
+    _profile = profile;
+    _selectedImageFile = null;
+    notifyListeners();
+  }
+
+  void _setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setUploadingPhoto(bool value) {
+    _isUploadingPhoto = value;
+    notifyListeners();
+  }
+
+  void _setSelectedImageFile(File? file) {
+    _selectedImageFile = file;
     notifyListeners();
   }
 
   Future<void> pickImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      profile.profilePicturePath = pickedFile.path;
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        print("Image picked: ${pickedFile.path}");
+        // await uploadProfilePhoto(File(pickedFile.path));
+        _setSelectedImageFile(File(pickedFile.path));
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+      _errorMessage = "Failed to pick image: $e";
+      _selectedImageFile = null;
       notifyListeners();
     }
   }
@@ -64,9 +108,9 @@ class ProfileProvider extends ChangeNotifier {
 
     if (isDob) {
       initialDate =
-          profile.dob ?? DateTime.now().subtract(Duration(days: 6570));
+          _profile?.dob ?? DateTime.now().subtract(Duration(days: 6570));
     } else {
-      initialDate = profile.dateOfJoining;
+      initialDate = _profile?.dateOfJoining ?? DateTime.now();
     }
 
     final picked = await showDatePicker(
@@ -85,63 +129,127 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  void getProfileData() {
-    if (_isDataLoaded) return;
-
-    nameController.text = profile.name ?? '';
-    emailController.text = profile.email ?? '';
-    phoneController.text = profile.phone ?? '';
-    employeeIdController.text = profile.employeeId != null
-        ? profile.employeeId.toString()
-        : '';
-    _isDataLoaded = true;
-    notifyListeners();
-  }
-
   bool validateProfile() {
     return profileKey.currentState?.validate() ?? false;
   }
 
-  void saveProfile() {
-    profile.name = nameController.text;
-    profile.email = emailController.text;
-    profile.phone = phoneController.text;
-
-    final employeeIdText = employeeIdController.text;
-    if (employeeIdText.isNotEmpty) {
-      profile.employeeId = int.tryParse(employeeIdText) ?? 0;
+  Future<void> uploadProfilePhoto(File file) async {
+    if (_profile == null) {
+      _errorMessage = "No profile loaded";
+      notifyListeners();
+      return;
     }
+    _setUploadingPhoto(true);
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final url = await _profileService.uploadProfilePhoto(
+        _profile!.uid,
+        file,
+        _profile!.profilePicturePath ?? '',
+      );
 
+      final updatedProfile = _profile!.copyWith(profilePicturePath: url);
+      _profile = updatedProfile;
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = "Failed to upload photo: $e";
+      _selectedImageFile = null;
+      notifyListeners();
+      rethrow;
+    } finally {
+      _setUploadingPhoto(false);
+      _setIsLoading(false);
+    }
+  }
+
+  Future<void> loadAllProfiles() async {
+    _setIsLoading(true);
+    try {
+      _allProfiles = await _profileService.getAllUserProfiles();
+      _errorMessage = null;
+    } catch (e) {
+      print("Error loading all profiles: $e");
+      _errorMessage = "Failed to load all profiles: $e";
+    } finally {
+      _setIsLoading(false);
+    }
+  }
+
+  Future<void> loadProfile(String uid) async {
+    _setIsLoading(true);
+    try {
+      _profile = await _profileService.getUserProfile(uid);
+
+      if (_profile != null) {
+        nameController.text = _profile!.name ?? '';
+        emailController.text = _profile!.email ?? '';
+        phoneController.text = _profile!.phone ?? '';
+        employeeIdController.text = _profile?.employeeId != null
+            ? _profile!.employeeId.toString()
+            : '';
+      }
+
+      _errorMessage = null;
+      _selectedImageFile = null;
+    } catch (e) {
+      print("Error loading profile: $e");
+      _errorMessage = "Failed to load profile: $e";
+    } finally {
+      _setIsLoading(false);
+    }
+  }
+
+  Future<void> updateProfile() async {
+    if (_profile == null) return;
+    if (!profileKey.currentState!.validate()) return;
+    if (_selectedImageFile != null) {}
+
+    _setIsLoading(true);
+    try {
+      if (_selectedImageFile != null) {
+        await uploadProfilePhoto(_selectedImageFile!);
+      }
+
+      final updated = Profile(
+        uid: _profile!.uid,
+        name: nameController.text,
+        email: emailController.text,
+        role: _profile!.role,
+        phone: phoneController.text,
+        dob: _profile!.dob,
+        department: _profile!.department,
+        position: _profile!.position,
+        location: _profile!.location,
+        employeeId: _profile!.employeeId,
+        dateOfJoining: _profile!.dateOfJoining,
+        profilePicturePath: _profile!.profilePicturePath,
+      );
+
+      await _profileService.updateUserProfile(updated);
+      _profile = updated;
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      print("Error updating profile: $e");
+      _errorMessage = "Failed to update profile: $e";
+      notifyListeners();
+      rethrow;
+    } finally {
+      _setIsLoading(false);
+    }
+  }
+
+  void clearProfile() {
+    _profile = null;
+    _errorMessage = null;
+    _selectedImageFile = null;
     notifyListeners();
   }
 
-  void loadProfileFromSource(Profile sourceProfile) {
-    profile = Profile(
-      name: sourceProfile.name,
-      email: sourceProfile.email,
-      phone: sourceProfile.phone,
-      employeeId: sourceProfile.employeeId,
-      department: sourceProfile.department,
-      position: sourceProfile.position,
-      location: sourceProfile.location,
-      dateOfJoining: sourceProfile.dateOfJoining,
-      dob: sourceProfile.dob,
-      profilePicturePath: sourceProfile.profilePicturePath,
-    );
-
-    nameController.text = profile.name ?? '';
-    emailController.text = profile.email ?? '';
-    phoneController.text = profile.phone ?? '';
-    employeeIdController.text = profile.employeeId != null
-        ? profile.employeeId.toString()
-        : '';
-
-    _isDataLoaded = true;
-    notifyListeners();
-  }
-
-  void reset() {
-    _isDataLoaded = false;
-    getProfileData();
-  }
+  // void reset() {
+  //   _isDataLoaded = false;
+  //   getProfileData();
+  // }
 }

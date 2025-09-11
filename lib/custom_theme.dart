@@ -379,9 +379,11 @@ class CustomTheme {
     required VoidCallback onPressed,
     String? profilePicturePath,
     String? label,
+    File? selectedImageFile,
+    bool isUploadingPhoto = false,
   }) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: CustomTheme.whiteButNot,
         borderRadius: CustomTheme.borderRadius,
@@ -389,70 +391,97 @@ class CustomTheme {
           BoxShadow(
             color: CustomTheme.colorBrown.withOpacity(0.1),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label ?? "Select Picture",
-                  style: smallFont(
-                    CustomTheme.colorLightBrown,
-                    FontWeight.w600,
-                    context,
-                  ),
+          if (label != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                label,
+                style: smallFont(
+                  CustomTheme.colorLightBrown,
+                  FontWeight.w600,
+                  context,
                 ),
-              ),
-              ElevatedButton.icon(
-                onPressed: onPressed,
-                icon: Icon(Icons.add_photo_alternate_rounded, size: 20),
-                label: Text("Choose"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomTheme.colorGold,
-                  foregroundColor: CustomTheme.colorBrown,
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  textStyle: smallFont(
-                    CustomTheme.colorBrown,
-                    FontWeight.w700,
-                    context,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (profilePicturePath != null) ...[
-            SizedBox(height: 16),
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: CustomTheme.borderRadius,
-                border: Border.all(color: CustomTheme.colorGold, width: 2),
-              ),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: CustomTheme.borderRadius,
-                    child: Image.file(
-                      File(profilePicturePath),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ),
-                ],
               ),
             ),
-          ],
+          Center(
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: CustomTheme.colorGold, width: 3),
+                  ),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: selectedImageFile != null
+                        ? FileImage(selectedImageFile)
+                        : (profilePicturePath != null &&
+                              profilePicturePath.isNotEmpty)
+                        ? NetworkImage(profilePicturePath)
+                        : null,
+                    child:
+                        (selectedImageFile == null &&
+                            (profilePicturePath == null ||
+                                profilePicturePath.isEmpty))
+                        ? const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Colors.blueGrey,
+                          )
+                        : null,
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: CustomTheme.colorGold,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: isUploadingPhoto ? null : onPressed,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: isUploadingPhoto
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -19,27 +19,27 @@ class ProfileScreen extends StatelessWidget {
             children: [
               buildProfileHeader(
                 context,
-                profileProvider.profile.name,
-                profileProvider.profile.position,
-                profileProvider.profile.profilePicturePath,
-                profileProvider.profile.dob,
+                profileProvider.profile?.name,
+                profileProvider.profile?.position,
+                profileProvider.profile?.profilePicturePath,
+                profileProvider.profile?.dob,
               ),
               SizedBox(height: 20),
               buildProfileInfo(
                 context,
-                profileProvider.profile.name,
-                profileProvider.profile.email,
-                profileProvider.profile.phone,
-                profileProvider.profile.dob,
+                profileProvider.profile?.name,
+                profileProvider.profile?.email,
+                profileProvider.profile?.phone,
+                profileProvider.profile?.dob,
               ),
               SizedBox(height: 20),
               buildLocationInfo(
                 context,
-                profileProvider.profile.employeeId,
-                profileProvider.profile.dateOfJoining,
-                profileProvider.profile.department,
-                profileProvider.profile.position,
-                profileProvider.profile.location,
+                profileProvider.profile?.employeeId,
+                profileProvider.profile?.dateOfJoining,
+                profileProvider.profile?.department,
+                profileProvider.profile?.position,
+                profileProvider.profile?.location,
               ),
             ],
           ),
@@ -73,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: profilePicturePath != null
-                      ? FileImage(File(profilePicturePath))
+                      ? NetworkImage(profilePicturePath)
                       : AssetImage('assets/images/profile.png'),
                 ),
                 const SizedBox(width: 20),
