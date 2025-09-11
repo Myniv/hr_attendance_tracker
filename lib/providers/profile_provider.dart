@@ -225,6 +225,7 @@ class ProfileProvider extends ChangeNotifier {
         employeeId: _profile!.employeeId,
         dateOfJoining: _profile!.dateOfJoining,
         profilePicturePath: _profile!.profilePicturePath,
+        isNew: false,
       );
 
       await _profileService.updateUserProfile(updated);

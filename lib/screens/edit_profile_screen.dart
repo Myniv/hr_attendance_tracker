@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/main.dart';
 import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
@@ -84,11 +85,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final isPersonal = args['isPersonal'] as bool;
-
     final profileProvider = Provider.of<ProfileProvider>(context);
+    final isNew = profileProvider.profile?.isNew;
     final phoneFormatter = MaskTextInputFormatter(
       mask: '+62 ###-####-####',
       filter: {"#": RegExp(r'[0-9]')},
@@ -96,7 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: CustomAppbar(
-        title: isPersonal ? "Edit Personal Info" : "Edit Work Info",
+        title: "Edit Personal Info",
         onBack: () => Navigator.pop(context),
         icon: Icons.arrow_back,
       ),
@@ -430,13 +428,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           Duration(seconds: 2),
                                         );
 
-                                        Navigator.pop(context);
                                         _customTheme.customScaffoldMessage(
                                           context: context,
-                                          message: isPersonal
-                                              ? "Personal information updated successfully!"
-                                              : "Work information updated successfully!",
+                                          message:
+                                              "Information updated successfully!",
                                         );
+                                        if (isNew == true || isNew == null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => MainScreen(),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.pop(context);
+                                        }
                                       }
                                     },
                               icon: profileProvider.isLoading

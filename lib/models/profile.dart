@@ -13,6 +13,7 @@ class Profile {
   int? employeeId;
   DateTime? dateOfJoining;
   String? profilePicturePath;
+  bool? isNew;
 
   Profile({
     required this.uid,
@@ -27,6 +28,7 @@ class Profile {
     this.employeeId,
     this.dateOfJoining,
     this.profilePicturePath,
+    this.isNew,
   });
 
   Profile copyWith({
@@ -42,6 +44,7 @@ class Profile {
     int? employeeId,
     DateTime? dateOfJoining,
     String? profilePicturePath,
+    bool? isNew,
   }) {
     return Profile(
       uid: uid ?? this.uid,
@@ -56,6 +59,7 @@ class Profile {
       employeeId: employeeId ?? this.employeeId,
       dateOfJoining: dateOfJoining ?? this.dateOfJoining,
       profilePicturePath: profilePicturePath ?? this.profilePicturePath,
+      isNew: isNew ?? this.isNew,
     );
   }
 
@@ -75,6 +79,7 @@ class Profile {
           ? Timestamp.fromDate(dateOfJoining!)
           : null,
       'profilePicturePath': profilePicturePath,
+      'isNew': isNew
     };
   }
 
@@ -94,6 +99,7 @@ class Profile {
           ? (map['dateOfJoining'] as Timestamp).toDate()
           : null,
       profilePicturePath: map['profilePicturePath'],
+      isNew: map['isNew'],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:hr_attendance_tracker/main.dart';
 import 'package:hr_attendance_tracker/providers/auth_provider.dart';
 import 'package:hr_attendance_tracker/providers/profile_provider.dart';
 import 'package:hr_attendance_tracker/screens/auth/login_screen.dart';
+import 'package:hr_attendance_tracker/screens/edit_profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -46,6 +47,10 @@ class AuthWrapper extends StatelessWidget {
           // }
 
           if (profileProvider.profile != null) {
+            if (profileProvider.profile?.isNew == true ||
+                profileProvider.profile?.isNew == null) {
+              return const EditProfileScreen();
+            }
             return const MainScreen();
           }
 

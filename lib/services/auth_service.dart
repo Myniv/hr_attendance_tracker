@@ -55,6 +55,7 @@ class AuthService {
           name: user.email!.split('@')[0],
           email: user.email!,
           role: "member",
+          isNew: true,
         );
         await _profileService.createUserProfile(profile);
 
