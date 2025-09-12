@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   profile?.email,
                   profile?.phone,
                   profile?.dob,
-                  profile?.uid,
+                  uid,
                 ),
                 SizedBox(height: 20),
                 buildLocationInfo(
@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   profile?.department,
                   profile?.position,
                   profile?.location,
-                  profile?.uid,
+                  uid,
                 ),
               ],
             ),
@@ -237,11 +237,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
                 onPressed: () async {
-                  Navigator.pushNamed(
-                    context,
-                    '/edit-profile',
-                    arguments: {'uid': uid},
-                  );
+                  if (uid == null) {
+                    Navigator.pushNamed(context, '/edit-profile');
+                  } else {
+                    Navigator.pushNamed(
+                      context,
+                      '/edit-profile',
+                      arguments: {'uid': uid},
+                    );
+                  }
 
                   if (mounted) {
                     final profileProvider = context.read<ProfileProvider>();

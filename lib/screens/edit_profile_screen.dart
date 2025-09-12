@@ -583,6 +583,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         await profileProvider.createNewProfile();
       } else {
         await profileProvider.updateProfile();
+        await profileProvider.loadProfile(profileProvider.profile!.uid);
       }
 
       await Future.delayed(Duration(seconds: 2));

@@ -291,6 +291,7 @@ class ProfileProvider extends ChangeNotifier {
       );
 
       await _profileService.updateUserProfile(updated);
+      await loadProfile(_profile!.uid);
       _profile = updated;
       _errorMessage = null;
       notifyListeners();
