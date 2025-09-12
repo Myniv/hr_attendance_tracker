@@ -4,7 +4,7 @@ class AttendanceHistory {
   DateTime? in_time;
   DateTime? out_time;
   double? total_hours;
-  int? employee_id;
+  String? employee_id;
 
   AttendanceHistory({
     this.id,

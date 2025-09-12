@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
+import 'package:hr_attendance_tracker/services/attendance_history_services.dart';
 import 'package:hr_attendance_tracker/services/profile_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final ProfileService _profileService = ProfileService();
+  final AttendanceHistoryServices _attendanceHistoryServices =
+      AttendanceHistoryServices();
 
   Future<User?> signInWithEmail(String email, String password) async {
     try {
@@ -19,6 +22,8 @@ class AuthService {
       if (user != null) {
         final exists = await _profileService.checkUserExists(user.uid);
         print("Profile exists for ${user.uid}: $exists");
+
+        await _attendanceHistoryServices.saveEmployeeId(user.uid);
 
         // if (!exists) {
         //   print("Creating missing profile for user: ${user.uid}");
@@ -127,6 +132,7 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
     await _googleSignIn.signOut();
+    await _attendanceHistoryServices.clearAllPreferences();
   }
 
   User? get currentUser => _auth.currentUser;

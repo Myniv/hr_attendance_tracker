@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AttendanceHistoryServices {
-  static const String baseUrl = "http://localhost:7190/api/attendance/";
-  // static const String baseUrl = "http://10.0.2.2:7190/api/attendance/";
+  // static const String baseUrl = "http://localhost:7190/api/attendance/";
+  static const String baseUrl = "http://10.0.2.2:7190/api/attendance/";
   // static const String baseUrl = "http://192.168.1.50:7190/api/attendance/";
 
   Future<List<AttendanceHistory>> getAllAttendance() async {
@@ -34,7 +34,7 @@ class AttendanceHistoryServices {
   }
 
   Future<List<AttendanceHistory>> getAttendanceByEmployeeId(
-    int employeeId,
+    String employeeId,
   ) async {
     try {
       final url = "${baseUrl}by-employee/$employeeId";
@@ -97,7 +97,7 @@ class AttendanceHistoryServices {
         "out_time": attendanceHistory.out_time?.toIso8601String(),
       };
 
-      final url = "${baseUrl}clock-out/${attendanceHistory.id}";
+      final url = "${baseUrl}clock-out/${attendanceHistory.employee_id}";
 
       final response = await http
           .put(
@@ -117,19 +117,19 @@ class AttendanceHistoryServices {
     }
   }
 
-  Future<void> saveEmployeeId(int employeeId) async {
+  Future<void> saveEmployeeId(String employeeId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt("employee_id", employeeId);
+      await prefs.setString("employee_id", employeeId);
     } catch (e) {
       throw Exception("Failed to save employee ID");
     }
   }
 
-  Future<int?> loadEmployeeId() async {
+  Future<String?> loadEmployeeId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final employeeId = prefs.getInt("employee_id");
+      final employeeId = prefs.getString("employee_id");
       return employeeId;
     } catch (e) {
       return null;

@@ -8,7 +8,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   List<AttendanceSummary> _summaries = [];
   bool _isLoading = false;
   String? _errorMessage;
-  int? _employeeId;
+  String? _employeeId;
   int? _currentAttendanceId;
   bool _isClockOut = false;
 
@@ -16,7 +16,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   List<AttendanceSummary> get summaries => _summaries;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  int? get employeeId => _employeeId;
+  String? get employeeId => _employeeId;
   int? get currentAttendanceId => _currentAttendanceId;
   bool get isClockOut => _isClockOut;
 
@@ -29,7 +29,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _employeeId = await _attendanceHistoryServices.loadEmployeeId() ?? 1;
+      _employeeId = await _attendanceHistoryServices.loadEmployeeId();
       await _attendanceHistoryServices.saveEmployeeId(_employeeId!);
 
       _attHistory = await _attendanceHistoryServices.getAttendanceByEmployeeId(
@@ -47,14 +47,14 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   }
 
   Future<void> clockIn(DateTime inTime) async {
-    _isLoading = true; 
+    _isLoading = true;
     notifyListeners();
 
     final today = DateTime.now();
     final data = AttendanceHistory(
       date: today,
       in_time: inTime,
-      employee_id: _employeeId ?? 1, 
+      employee_id: _employeeId,
     );
 
     try {
@@ -74,32 +74,55 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   }
 
   Future<void> clockOut(DateTime outTime) async {
+    _errorMessage = null;
     _isLoading = true;
     notifyListeners();
 
-    final today = DateTime.now();
-
-    final attendanceId = await _attendanceHistoryServices.loadAttendanceId();
-
-    if (attendanceId == null) {
-      _errorMessage = "No active clock-in session found";
-      _isLoading = false;
-      notifyListeners();
-      return;
-    }
-
-    final data = AttendanceHistory(
-      id: employeeId,
-      date: today,
-      out_time: outTime,
-    );
-
     try {
+      // Ensure employee ID is available
+      if (_employeeId == null) {
+        _employeeId = await _attendanceHistoryServices.loadEmployeeId();
+        if (_employeeId == null) {
+          _errorMessage = "Employee ID not found. Please clock in first.";
+          _isLoading = false;
+          notifyListeners();
+          return;
+        }
+      }
+
+      final attendanceId = await _attendanceHistoryServices.loadAttendanceId();
+
+      if (attendanceId == null) {
+        _errorMessage =
+            "No active clock-in session found. Please clock in first.";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      final today = DateTime.now();
+      final data = AttendanceHistory(
+        id: attendanceId,
+        date: today,
+        out_time: outTime,
+        employee_id: _employeeId,
+      );
+
+      print("Employee ID: $_employeeId");
+
       await _attendanceHistoryServices.clockOut(data);
-      await _attendanceHistoryServices.saveAttendanceId(null);
+
+      // Update SharedPreferences
+      await _attendanceHistoryServices.saveAttendanceId(
+        null,
+      ); // Clear attendance ID
       await _attendanceHistoryServices.saveIsClockOut(true);
       await _attendanceHistoryServices.saveClockOutTime(outTime);
+
       _errorMessage = null;
+
+      // Refresh attendance history to show the updated record
+      await fetchAttendanceHistoryByEmployeeId();
     } catch (e) {
       _errorMessage = "Failed to clock out: ${e.toString()}";
       print("Failed to clock out: $e");
