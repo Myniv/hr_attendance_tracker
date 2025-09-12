@@ -17,21 +17,20 @@ class AuthService {
 
       final user = credential.user;
       if (user != null) {
-        // Check if profile exists, create if not
         final exists = await _profileService.checkUserExists(user.uid);
         print("Profile exists for ${user.uid}: $exists");
 
-        if (!exists) {
-          print("Creating missing profile for user: ${user.uid}");
-          final profile = Profile(
-            uid: user.uid,
-            name: user.email!.split('@')[0], // Use email prefix as name
-            email: user.email!,
-            role: "member",
-          );
-          await _profileService.createUserProfile(profile);
-          print("Profile created successfully for: ${user.uid}");
-        }
+        // if (!exists) {
+        //   print("Creating missing profile for user: ${user.uid}");
+        //   final profile = Profile(
+        //     uid: user.uid,
+        //     name: user.email!.split('@')[0], // Use email prefix as name
+        //     email: user.email!,
+        //     role: "member",
+        //   );
+        //   await _profileService.createUserProfile(profile);
+        //   print("Profile created successfully for: ${user.uid}");
+        // }
       }
 
       print("User in auth service: ${credential.user}");
@@ -65,6 +64,22 @@ class AuthService {
       return credential.user;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message) ?? "Registration failed";
+    }
+  }
+
+  Future<User?> createNewUserEmailPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = credential.user;
+      return user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message) ?? "Failed to create user";
     }
   }
 

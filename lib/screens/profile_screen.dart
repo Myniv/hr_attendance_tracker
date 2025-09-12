@@ -38,6 +38,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             print("Profile not found for UID: $uid");
           }
         });
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final profileProvider = context.read<ProfileProvider>();
+          try {
+            profileProvider.setProfile(profileProvider.profile!);
+            print("Profile loaded: ${profileProvider.profile?.name}");
+          } catch (e) {
+            print("Profile not found for UID: $uid");
+          }
+        });
       }
       _isInitialized = true;
     }
@@ -56,34 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var profile = uid != null
         ? profileProvider.profile2
         : profileProvider.profile;
-
-    if (profile == null && uid != null) {
-      return Scaffold(
-        backgroundColor: CustomTheme.backgroundScreenColor,
-        appBar: AppBar(
-          backgroundColor: CustomTheme.colorLightBrown,
-          foregroundColor: Colors.white,
-          title: Text('Profile'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: CustomTheme.colorGold),
-              SizedBox(height: 16),
-              Text(
-                'Loading profile...',
-                style: CustomTheme().mediumFont(
-                  CustomTheme.colorBrown,
-                  FontWeight.w500,
-                  context,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
@@ -123,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   profile?.department,
                   profile?.position,
                   profile?.location,
-                  profile?.uid
+                  profile?.uid,
                 ),
               ],
             ),
@@ -254,12 +236,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               IconButton(
                 icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pushNamed(
                     context,
                     '/edit-profile',
                     arguments: {'uid': uid},
                   );
+
+                  if (mounted) {
+                    final profileProvider = context.read<ProfileProvider>();
+                    if (uid != null) {
+                      await profileProvider.loadAllProfiles();
+                      try {
+                        final updatedProfile = profileProvider.allProfiles
+                            .firstWhere((profile) => profile.uid == uid);
+                        profileProvider.setProfile2(updatedProfile);
+                      } catch (e) {
+                        print("Error finding updated profile: $e");
+                      }
+                    } else {
+                      final currentUid = profileProvider.profile?.uid;
+                      if (currentUid != null) {
+                        await profileProvider.loadProfile(currentUid);
+                      }
+                    }
+                  }
                 },
               ),
             ],
@@ -321,16 +322,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/edit-profile',
-                    arguments: {'uid': uid},
-                  );
-                },
-              ),
+              // IconButton(
+              //   icon: Icon(Icons.edit_rounded, color: CustomTheme.colorBrown),
+              //   onPressed: () async {
+              //     Navigator.pushNamed(
+              //       context,
+              //       '/edit-profile',
+              //       arguments: {'uid': uid},
+              //     );
+
+              //     if (mounted) {
+              //       final profileProvider = context.read<ProfileProvider>();
+              //       if (uid != null) {
+              //         await profileProvider.loadAllProfiles();
+              //         try {
+              //           final updatedProfile = profileProvider.allProfiles
+              //               .firstWhere((profile) => profile.uid == uid);
+              //           profileProvider.setProfile2(updatedProfile);
+              //         } catch (e) {
+              //           print("Error finding updated profile: $e");
+              //         }
+              //       } else {
+              //         final currentUid = profileProvider.profile?.uid;
+              //         if (currentUid != null) {
+              //           await profileProvider.loadProfile(currentUid);
+              //         }
+              //       }
+              //     }
+              //   },
+              // ),
             ],
           ),
           SizedBox(height: 10),

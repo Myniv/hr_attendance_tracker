@@ -210,6 +210,7 @@ class CustomTheme {
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
     int maxLines = 1,
+    bool obscureText = false,
   }) {
     return Container(
       decoration: BoxDecoration(borderRadius: CustomTheme.borderRadius),
@@ -218,6 +219,7 @@ class CustomTheme {
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         maxLines: maxLines,
+        obscureText: obscureText,
         style: smallFont(CustomTheme.colorBrown, FontWeight.w500, context),
         decoration: InputDecoration(
           labelText: label,

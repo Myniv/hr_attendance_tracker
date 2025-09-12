@@ -21,6 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _currentUid;
   String? _originalUid;
   bool _isEditingProfile2 = false;
+  bool _isCreatingNewProfile = false;
 
   final departmentsList = [
     'HR',
@@ -66,17 +67,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
       final String? uid = args?['uid'];
+      final bool? createNewProfile = args?['createNewProfile'];
 
       if (uid != null) {
         _currentUid = uid;
         _isEditingProfile2 = true;
+        _isCreatingNewProfile = false;
+
+        profileProvider.setEditingState(true, false);
+
         print("EditProfileScreen: Editing profile2 for UID: $uid");
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _loadProfileData(profileProvider, uid);
         });
+      } else if (createNewProfile != null && createNewProfile == true) {
+        _isEditingProfile2 = false;
+        _isCreatingNewProfile = true;
+
+        profileProvider.setEditingState(false, true);
+        profileProvider.initializeNewProfile();
+
+        print("EditProfileScreen: Creating new profile");
       } else {
         _isEditingProfile2 = false;
+        _isCreatingNewProfile = false;
+
+        profileProvider.setEditingState(false, false);
+
         print("EditProfileScreen: Editing current user profile");
         _populateFormFields(profileProvider.profile, profileProvider);
       }
@@ -132,6 +150,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   dynamic _getCurrentProfile(ProfileProvider profileProvider) {
     return _isEditingProfile2
         ? profileProvider.profile2
+        : _isCreatingNewProfile
+        ? profileProvider.newProfile
         : profileProvider.profile;
   }
 
@@ -150,6 +170,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: CustomAppbar(
         title: _isEditingProfile2
             ? "Edit ${currentProfile?.name ?? 'Profile'}"
+            : _isCreatingNewProfile
+            ? "New Profile"
             : "Edit Personal Info",
         onBack: () => Navigator.pop(context),
         icon: Icons.arrow_back,
@@ -199,6 +221,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             Text(
                               _isEditingProfile2
                                   ? "Edit ${currentProfile?.name ?? 'profile'} details below"
+                                  : _isCreatingNewProfile
+                                  ? "Create a new profile"
                                   : "Edit your personal details below",
                               style: _customTheme.mediumFont(
                                 CustomTheme.colorBrown,
@@ -256,6 +280,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           return null;
                         },
                       ),
+                      SizedBox(height: 20),
+                      // Add this after the email field, only for new profile creation
+                      if (_isCreatingNewProfile) ...[
+                        SizedBox(height: 20),
+                        _customTheme.customTextField(
+                          context: context,
+                          controller: profileProvider.passwordController,
+                          label: "Password",
+                          hint: "Enter password",
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Please enter password";
+                            }
+                            if (value.length < 6) {
+                              return "Password must be at least 6 characters";
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                       SizedBox(height: 20),
 
                       _customTheme.customTextField(
@@ -420,7 +465,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               ),
                                               ElevatedButton(
                                                 onPressed: () {
-                                                  // Reset form fields
                                                   _populateFormFields(
                                                     currentProfile,
                                                     profileProvider,
@@ -535,6 +579,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       if (_isEditingProfile2) {
         await profileProvider.updateProfile2();
+      } else if (_isCreatingNewProfile) {
+        await profileProvider.createNewProfile();
       } else {
         await profileProvider.updateProfile();
       }

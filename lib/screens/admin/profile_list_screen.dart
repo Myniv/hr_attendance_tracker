@@ -25,31 +25,40 @@ class _ProfileListScreenState extends State<ProfileListScreen> {
     final provider = Provider.of<ProfileProvider>(context);
     final profiles = provider.allProfiles;
 
-    return Container(
-      color: CustomTheme.backgroundScreenColor,
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        children: [
-          if (profiles.isEmpty)
-            NoItem(
-              title: 'No profiles found',
-              subTitle: 'Profiles will appear here once they are added',
-            )
-          else
-            ...profiles
-                .map(
-                  (profile) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildProfileCard(
-                      profile.profilePicturePath ?? '',
-                      profile.name,
-                      profile.email,
-                      profile.uid,
+    return Scaffold(
+      body: Container(
+        color: CustomTheme.backgroundScreenColor,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          children: [
+            if (profiles.isEmpty)
+              NoItem(
+                title: 'No profiles found',
+                subTitle: 'Profiles will appear here once they are added',
+              )
+            else
+              ...profiles
+                  .map(
+                    (profile) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildProfileCard(
+                        profile.profilePicturePath ?? '',
+                        profile.name,
+                        profile.email,
+                        profile.uid,
+                      ),
                     ),
-                  ),
-                )
-                .toList(),
-        ],
+                  )
+                  .toList(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: CustomTheme.colorGold,
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/edit-profile', arguments: {'createNewProfile': true});
+        },
       ),
     );
   }

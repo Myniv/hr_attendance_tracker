@@ -2,18 +2,29 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/models/profile.dart';
+import 'package:hr_attendance_tracker/services/auth_service.dart';
 import 'package:hr_attendance_tracker/services/profile_service.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final profileKey = GlobalKey<FormState>();
   final ProfileService _profileService = ProfileService();
+  final AuthService _authService = AuthService();
 
   Profile? _profile;
   Profile? get profile => _profile;
 
   Profile? _profile2;
   Profile? get profile2 => _profile2;
+
+  bool _isEditingProfile2 = false;
+  bool get isEditingProfile2 => _isEditingProfile2;
+
+  Profile? _newProfile;
+  Profile? get newProfile => _newProfile;
+
+  bool _isCreatingNewProfile = false;
+  bool get isCreatingNewProfile => _isCreatingNewProfile;
 
   List<Profile> _allProfiles = [];
   List<Profile> get allProfiles => _allProfiles;
@@ -33,6 +44,7 @@ class ProfileProvider extends ChangeNotifier {
   final nameController = TextEditingController();
   final employeeIdController = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final phoneController = TextEditingController();
 
   final _picker = ImagePicker();
@@ -40,32 +52,68 @@ class ProfileProvider extends ChangeNotifier {
   bool _isDataLoaded = false;
 
   void setDepartment(String? value) {
-    _profile?.department = value ?? '';
+    if (_isEditingProfile2 && _profile2 != null) {
+      _profile2!.department = value ?? '';
+    } else if (_isCreatingNewProfile && _newProfile != null) {
+      _newProfile!.department = value ?? '';
+    } else if (_profile != null) {
+      _profile!.department = value ?? '';
+    }
     notifyListeners();
   }
 
   void setPosition(String? value) {
-    _profile?.position = value ?? '';
+    if (_isEditingProfile2 && _profile2 != null) {
+      _profile2!.position = value ?? '';
+    } else if (_isCreatingNewProfile && _newProfile != null) {
+      _newProfile!.position = value ?? '';
+    } else if (_profile != null) {
+      _profile!.position = value ?? '';
+    }
     notifyListeners();
   }
 
   void setLocation(String? value) {
-    _profile?.location = value ?? '';
+    if (_isEditingProfile2 && _profile2 != null) {
+      _profile2!.location = value ?? '';
+    } else if (_isCreatingNewProfile && _newProfile != null) {
+      _newProfile!.location = value ?? '';
+    } else if (_profile != null) {
+      _profile!.location = value ?? '';
+    }
     notifyListeners();
   }
 
   void setDateOfJoining(DateTime? value) {
     if (value != null) {
-      _profile?.dateOfJoining = value;
+      if (_isEditingProfile2 && _profile2 != null) {
+        _profile2!.dateOfJoining = value;
+      } else if (_isCreatingNewProfile && _newProfile != null) {
+        _newProfile!.dateOfJoining = value;
+      } else if (_profile != null) {
+        _profile!.dateOfJoining = value;
+      }
       notifyListeners();
     }
   }
 
   void setDOB(DateTime? value) {
     if (value != null) {
-      _profile?.dob = value;
+      if (_isEditingProfile2 && _profile2 != null) {
+        _profile2!.dob = value;
+      } else if (_isCreatingNewProfile && _newProfile != null) {
+        _newProfile!.dob = value;
+      } else if (_profile != null) {
+        _profile!.dob = value;
+      }
       notifyListeners();
     }
+  }
+
+  void setEditingState(bool editingProfile2, bool creatingNew) {
+    _isEditingProfile2 = editingProfile2;
+    _isCreatingNewProfile = creatingNew;
+    notifyListeners();
   }
 
   void setProfile(Profile profile) {
@@ -76,6 +124,12 @@ class ProfileProvider extends ChangeNotifier {
 
   void setProfile2(Profile profile) {
     _profile2 = profile;
+    _selectedImageFile = null;
+    notifyListeners();
+  }
+
+  void setNewProfile(Profile profile) {
+    _newProfile = profile;
     _selectedImageFile = null;
     notifyListeners();
   }
@@ -213,7 +267,6 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> updateProfile() async {
     if (_profile == null) return;
     if (!profileKey.currentState!.validate()) return;
-    if (_selectedImageFile != null) {}
 
     _setIsLoading(true);
     try {
@@ -262,7 +315,6 @@ class ProfileProvider extends ChangeNotifier {
 
     _setIsLoading(true);
     try {
-      // Handle photo upload if there's a selected image
       String? updatedPhotoPath = _profile2!.profilePicturePath;
       if (_selectedImageFile != null) {
         updatedPhotoPath = await _profileService.uploadProfilePhoto(
@@ -272,7 +324,6 @@ class ProfileProvider extends ChangeNotifier {
         );
       }
 
-      // Create updated profile with form data
       final updated = Profile(
         uid: _profile2!.uid,
         name: nameController.text,
@@ -290,13 +341,10 @@ class ProfileProvider extends ChangeNotifier {
         isNew: false,
       );
 
-      // Update in database
       await _profileService.updateUserProfile(updated);
 
-      // Update local state
       _profile2 = updated;
 
-      // Also update in allProfiles list
       final index = _allProfiles.indexWhere((p) => p.uid == updated.uid);
       if (index != -1) {
         _allProfiles[index] = updated;
@@ -315,6 +363,112 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       _setIsLoading(false);
     }
+  }
+
+  Future<void> createNewProfile() async {
+    if (!profileKey.currentState!.validate()) return;
+
+    if (_newProfile == null) {
+      _errorMessage = "No new profile initialized";
+      notifyListeners();
+      return;
+    }
+
+    _setIsLoading(true);
+    try {
+      // Create user with email and password first
+      final user = await _authService.createNewUserEmailPassword(
+        emailController.text,
+        passwordController.text,
+      );
+
+      if (user == null) {
+        _errorMessage = "Failed to create user";
+        notifyListeners();
+        return;
+      }
+
+      // Create the profile WITHOUT photo first
+      final newProfile = Profile(
+        uid: user.uid,
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
+        role: "member",
+        phone: phoneController.text.trim(),
+        dob: _newProfile!.dob,
+        department: _newProfile!.department,
+        position: _newProfile!.position,
+        location: _newProfile!.location,
+        employeeId: int.tryParse(employeeIdController.text.trim()),
+        dateOfJoining: _newProfile!.dateOfJoining,
+        profilePicturePath: null, // Set to null initially
+        isNew: false,
+      );
+
+      // Save profile to database first
+      await _profileService.createUserProfile(newProfile);
+
+      // Now upload photo if selected (after profile exists in database)
+      String? profilePhotoPath;
+      if (_selectedImageFile != null) {
+        profilePhotoPath = await _profileService.uploadProfilePhoto(
+          user.uid,
+          _selectedImageFile!,
+          '', // empty old URL since it's a new profile
+        );
+
+        // Update the profile with the photo path
+        final updatedProfile = newProfile.copyWith(
+          profilePicturePath: profilePhotoPath,
+        );
+        _newProfile = updatedProfile;
+      } else {
+        _newProfile = newProfile;
+      }
+
+      // Update local state
+      _allProfiles.add(_newProfile!);
+
+      _errorMessage = null;
+      _selectedImageFile = null;
+      notifyListeners();
+
+      print("New profile created successfully: ${_newProfile!.name}");
+    } catch (e) {
+      print("Error creating new profile: $e");
+      _errorMessage = "Failed to create profile: $e";
+      notifyListeners();
+      rethrow;
+    } finally {
+      _setIsLoading(false);
+    }
+  }
+
+  void initializeNewProfile() {
+    _newProfile = Profile(
+      uid: '',
+      name: '',
+      email: '',
+      role: 'member',
+      phone: '',
+      department: '',
+      position: '',
+      location: '',
+      employeeId: null,
+      dob: null,
+      dateOfJoining: null,
+      profilePicturePath: null,
+      isNew: true,
+    );
+
+    nameController.clear();
+    emailController.clear();
+    phoneController.clear();
+    employeeIdController.clear();
+    passwordController.clear();
+    _selectedImageFile = null;
+
+    notifyListeners();
   }
 
   void clearProfile() {
