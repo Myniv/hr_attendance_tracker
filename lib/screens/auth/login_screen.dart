@@ -286,34 +286,34 @@ class _LoginScreenState extends State<LoginScreen> {
                     // ),
 
                     // const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: _customTheme.smallFont(
-                            CustomTheme.whiteButNot.withOpacity(0.8),
-                            FontWeight.w400,
-                            context,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.register);
-                          },
-                          child: Text(
-                            "Sign Up",
-                            style: _customTheme.smallFont(
-                              CustomTheme.colorGold,
-                              FontWeight.w700,
-                              context,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       "Don't have an account? ",
+                    //       style: _customTheme.smallFont(
+                    //         CustomTheme.whiteButNot.withOpacity(0.8),
+                    //         FontWeight.w400,
+                    //         context,
+                    //       ),
+                    //     ),
+                    //     GestureDetector(
+                    //       onTap: () {
+                    //         Navigator.pushNamed(context, AppRoutes.register);
+                    //       },
+                    //       child: Text(
+                    //         "Sign Up",
+                    //         style: _customTheme.smallFont(
+                    //           CustomTheme.colorGold,
+                    //           FontWeight.w700,
+                    //           context,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
 
-                    const SizedBox(height: 20),
+                    // const SizedBox(height: 20),
                   ],
                 ),
               ),

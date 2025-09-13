@@ -281,7 +281,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
                       SizedBox(height: 20),
-                      // Add this after the email field, only for new profile creation
                       if (_isCreatingNewProfile) ...[
                         SizedBox(height: 20),
                         _customTheme.customTextField(
@@ -332,88 +331,90 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       SizedBox(height: 24),
 
-                      _customTheme.customTextField(
-                        context: context,
-                        controller: profileProvider.employeeIdController,
-                        label: "Employee ID",
-                        hint: "Enter employee ID",
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Please enter employee ID";
-                          }
-                          if (int.tryParse(value.trim()) == null) {
-                            return "Employee ID must be a number";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 24),
+                      if (profileProvider.profile?.role == "Admin") ...[
+                        _customTheme.customTextField(
+                          context: context,
+                          controller: profileProvider.employeeIdController,
+                          label: "Employee ID",
+                          hint: "Enter employee ID",
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return "Please enter employee ID";
+                            }
+                            if (int.tryParse(value.trim()) == null) {
+                              return "Employee ID must be a number";
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 24),
 
-                      _customTheme.customSelectDate(
-                        context: context,
-                        label: "Date of Joining",
-                        selectedDate: currentProfile?.dateOfJoining,
-                        onPressed: () =>
-                            profileProvider.pickDate(context, false),
-                      ),
-                      SizedBox(height: 20),
+                        _customTheme.customSelectDate(
+                          context: context,
+                          label: "Date of Joining",
+                          selectedDate: currentProfile?.dateOfJoining,
+                          onPressed: () =>
+                              profileProvider.pickDate(context, false),
+                        ),
+                        SizedBox(height: 20),
 
-                      _customTheme.customDropdown<String>(
-                        context: context,
-                        value: currentProfile?.department?.isNotEmpty == true
-                            ? currentProfile?.department
-                            : null,
-                        items: departmentsList,
-                        label: "Department",
-                        onChanged: (value) =>
-                            profileProvider.setDepartment(value),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a department';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
+                        _customTheme.customDropdown<String>(
+                          context: context,
+                          value: currentProfile?.department?.isNotEmpty == true
+                              ? currentProfile?.department
+                              : null,
+                          items: departmentsList,
+                          label: "Department",
+                          onChanged: (value) =>
+                              profileProvider.setDepartment(value),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a department';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
 
-                      _customTheme.customDropdown<String>(
-                        context: context,
-                        value: currentProfile?.position?.isNotEmpty == true
-                            ? currentProfile?.position
-                            : null,
-                        items: positionsList,
-                        label: "Position",
-                        onChanged: (value) =>
-                            profileProvider.setPosition(value),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a position';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
+                        _customTheme.customDropdown<String>(
+                          context: context,
+                          value: currentProfile?.position?.isNotEmpty == true
+                              ? currentProfile?.position
+                              : null,
+                          items: positionsList,
+                          label: "Position",
+                          onChanged: (value) =>
+                              profileProvider.setPosition(value),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a position';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
 
-                      _customTheme.customDropdown<String>(
-                        context: context,
-                        value: currentProfile?.location?.isNotEmpty == true
-                            ? currentProfile?.location
-                            : null,
-                        items: locationList,
-                        label: "Location",
-                        onChanged: (value) =>
-                            profileProvider.setLocation(value),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a location';
-                          }
-                          return null;
-                        },
-                      ),
+                        _customTheme.customDropdown<String>(
+                          context: context,
+                          value: currentProfile?.location?.isNotEmpty == true
+                              ? currentProfile?.location
+                              : null,
+                          items: locationList,
+                          label: "Location",
+                          onChanged: (value) =>
+                              profileProvider.setLocation(value),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a location';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
 
                       SizedBox(height: 40),
                       Row(

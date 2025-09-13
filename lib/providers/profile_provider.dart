@@ -377,7 +377,6 @@ class ProfileProvider extends ChangeNotifier {
 
     _setIsLoading(true);
     try {
-      // Create user with email and password first
       final user = await _authService.createNewUserEmailPassword(
         emailController.text,
         passwordController.text,
@@ -389,7 +388,6 @@ class ProfileProvider extends ChangeNotifier {
         return;
       }
 
-      // Create the profile WITHOUT photo first
       final newProfile = Profile(
         uid: user.uid,
         name: nameController.text.trim(),
@@ -402,23 +400,20 @@ class ProfileProvider extends ChangeNotifier {
         location: _newProfile!.location,
         employeeId: int.tryParse(employeeIdController.text.trim()),
         dateOfJoining: _newProfile!.dateOfJoining,
-        profilePicturePath: null, // Set to null initially
-        isNew: false,
+        profilePicturePath: null, 
+        isNew: true,
       );
 
-      // Save profile to database first
       await _profileService.createUserProfile(newProfile);
 
-      // Now upload photo if selected (after profile exists in database)
       String? profilePhotoPath;
       if (_selectedImageFile != null) {
         profilePhotoPath = await _profileService.uploadProfilePhoto(
           user.uid,
           _selectedImageFile!,
-          '', // empty old URL since it's a new profile
+          '',
         );
 
-        // Update the profile with the photo path
         final updatedProfile = newProfile.copyWith(
           profilePicturePath: profilePhotoPath,
         );
@@ -427,7 +422,6 @@ class ProfileProvider extends ChangeNotifier {
         _newProfile = newProfile;
       }
 
-      // Update local state
       _allProfiles.add(_newProfile!);
 
       _errorMessage = null;
