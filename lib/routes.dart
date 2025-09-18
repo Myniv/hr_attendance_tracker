@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/screens/about_screen.dart';
 import 'package:hr_attendance_tracker/screens/auth/login_screen.dart';
 import 'package:hr_attendance_tracker/screens/auth/register_screen.dart';
+import 'package:hr_attendance_tracker/screens/custom_splash_screen.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 import 'package:hr_attendance_tracker/screens/edit_profile_screen.dart';
 import 'package:hr_attendance_tracker/screens/home_screen.dart';
@@ -11,13 +12,14 @@ import 'package:hr_attendance_tracker/screens/setting_screen.dart';
 
 class AppRoutes {
   // static const String home = '/';
-  static const String profile = '/profile';
-  static const String editProfile = '/edit-profile';
-  static const String attendance = '/attendance';
-  static const String about = '/about';
-  static const String setting = '/setting';
+  static const profile = '/profile';
+  static const editProfile = '/edit-profile';
+  static const attendance = '/attendance';
+  static const about = '/about';
+  static const setting = '/setting';
   static const register = '/register';
   static const login = '/login';
+  static const splash = '/splash';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -59,6 +61,11 @@ class AppRoutes {
       case register:
         return MaterialPageRoute(
           builder: (_) => RegisterScreen(),
+          settings: settings,
+        );
+      case splash:
+        return MaterialPageRoute(
+          builder: (_) => CustomSplashScreen(),
           settings: settings,
         );
       default:

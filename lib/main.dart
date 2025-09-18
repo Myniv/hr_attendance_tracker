@@ -55,19 +55,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Sample Portfolio App",
-      // theme: ThemeData(
-      //   scaffoldBackgroundColor: CustomTheme.backgroundScreenColor,
-      // ),
       debugShowCheckedModeBanner: false,
       // home: MainScreen(),
       home: AuthWrapper(),
       onGenerateRoute: AppRoutes.generateRoute,
-
-      // home: Scaffold(
-      //   appBar: CustomAppbar(),
-      //   body: ProfilePage(),
-      //   bottomNavigationBar: CustomBottomNavbar(),
-      // ),
+      initialRoute: AppRoutes.splash,
     );
   }
 }
