@@ -8,6 +8,7 @@ import 'package:hr_attendance_tracker/services/attendance_history_services.dart'
 class AttendanceHistoryProvider extends ChangeNotifier {
   List<AttendanceHistory> _attHistory = [];
   List<AttendanceSummary> _summaries = [];
+  AttendanceHistory? _currentAttendance;
   bool _isLoading = false;
   String? _errorMessage;
   String? _employeeId;
@@ -16,6 +17,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
 
   List<AttendanceHistory> get attHistory => _attHistory;
   List<AttendanceSummary> get summaries => _summaries;
+  AttendanceHistory? get currentAttendance => _currentAttendance;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get employeeId => _employeeId;
@@ -49,6 +51,11 @@ class AttendanceHistoryProvider extends ChangeNotifier {
 
   void _setUploadingPhoto(bool value) {
     _isUploadingPhoto = value;
+    notifyListeners();
+  }
+
+  void setCurrentAttendance(AttendanceHistory attendance) {
+    _currentAttendance = attendance;
     notifyListeners();
   }
 

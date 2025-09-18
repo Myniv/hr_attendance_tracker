@@ -42,14 +42,14 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
 
     final summary = provider.getSummary(selectedDate);
 
-    // final filteredHistory = attHistory
-    //     .where(
-    //       (record) =>
-    //           record.date.year == selectedDate.year &&
-    //           record.date.month == selectedDate.month,
-    //     )
-    //     .toList();
-    final filteredHistory = attHistory.toList();
+    final filteredHistory = attHistory
+        .where(
+          (record) =>
+              record.date.year == selectedDate.year &&
+              record.date.month == selectedDate.month,
+        )
+        .toList();
+    // final filteredHistory = attHistory.toList();
 
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
@@ -96,6 +96,7 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
                             attendance.date,
                             attendance.in_time,
                             attendance.out_time,
+                            attendance.id!,
                             context,
                           );
                         },
@@ -263,6 +264,7 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
     DateTime? date,
     DateTime? inTime,
     DateTime? outTime,
+    int id,
     BuildContext context,
   ) {
     return Padding(
@@ -354,6 +356,22 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
                         : CustomTheme().smallFont(Colors.red, null, context),
                   ),
                 ],
+              ),
+            ),
+            Expanded(
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    "/attendance-history-detail",
+                    arguments: {'attendance_id': id},
+                  );
+                },
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ],
