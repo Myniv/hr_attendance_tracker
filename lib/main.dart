@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
@@ -18,8 +19,11 @@ import 'package:hr_attendance_tracker/screens/profile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+late List<CameraDescription> cameras;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
+
   await Firebase.initializeApp(
     options: FirebaseOptions(
       projectId: 'hr-attendance-tracker-471814', // Project ID

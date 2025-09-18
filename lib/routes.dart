@@ -1,7 +1,9 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_attendance_tracker/screens/about_screen.dart';
 import 'package:hr_attendance_tracker/screens/auth/login_screen.dart';
 import 'package:hr_attendance_tracker/screens/auth/register_screen.dart';
+import 'package:hr_attendance_tracker/screens/clock_inout_screen.dart';
 import 'package:hr_attendance_tracker/screens/custom_splash_screen.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 import 'package:hr_attendance_tracker/screens/edit_profile_screen.dart';
@@ -20,6 +22,7 @@ class AppRoutes {
   static const register = '/register';
   static const login = '/login';
   static const splash = '/splash';
+  static const clockInOut = '/clockInOut';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -66,6 +69,11 @@ class AppRoutes {
       case splash:
         return MaterialPageRoute(
           builder: (_) => CustomSplashScreen(),
+          settings: settings,
+        );
+      case clockInOut:
+        return MaterialPageRoute(
+          builder: (_) => ClockInOutScreen(),
           settings: settings,
         );
       default:

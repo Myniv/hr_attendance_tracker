@@ -488,4 +488,49 @@ class CustomTheme {
       ),
     );
   }
+
+  Widget customActionButton({
+    required String text,
+    required IconData icon,
+    required VoidCallback? onPressed,
+    Color? backgroundColor,
+    Color? foregroundColor,
+    bool isLoading = false,
+    required BuildContext context,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton.icon(
+        onPressed: isLoading ? null : onPressed,
+        icon: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    foregroundColor ?? CustomTheme.colorBrown,
+                  ),
+                ),
+              )
+            : Icon(icon, size: 22),
+        label: Text(
+          isLoading ? "Processing..." : text,
+          style: CustomTheme().mediumFont(
+            foregroundColor ?? CustomTheme.colorBrown,
+            FontWeight.w700,
+            context,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor ?? CustomTheme.colorGold,
+          foregroundColor: foregroundColor ?? CustomTheme.colorBrown,
+          shape: RoundedRectangleBorder(borderRadius: CustomTheme.borderRadius),
+          elevation: 6,
+          shadowColor: CustomTheme.colorBrown.withOpacity(0.3),
+        ),
+      ),
+    );
+  }
 }
