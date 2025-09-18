@@ -272,11 +272,11 @@ class AttendanceHistoryServices {
       }
 
       await _supabase.storage
-          .from('profile_photos')
+          .from('attendance')
           .upload(fileName, file, fileOptions: const FileOptions(upsert: true));
 
       final url = _supabase.storage
-          .from('profile_photos')
+          .from('attendance')
           .getPublicUrl(fileName);
 
       return url;

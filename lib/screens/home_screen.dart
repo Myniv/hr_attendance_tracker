@@ -13,7 +13,6 @@ import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 
-
 class HomeScreen extends StatefulWidget {
   final void Function(int) onTabSelected;
 
@@ -47,15 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadClockStatus();
-  }
-
-  Future<void> _loadClockStatus() async {
-    isClockIn = await _attendanceHistoryServices.loadIsClockIn() ?? false;
-    isClockOut = await _attendanceHistoryServices.loadIsClockOut() ?? false;
-    clockInTime = await _attendanceHistoryServices.loadClockInTime();
-    clockOutTime = await _attendanceHistoryServices.loadClockOutTime();
-    setState(() {});
+    context.read<AttendanceHistoryProvider>().loadClockStatus();
   }
 
   @override
@@ -74,8 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    final attendanceProvider = Provider.of<AttendanceHistoryProvider>(
+      context,
+      listen: true,
+    );
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -84,13 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _welcomeText(context),
             SizedBox(height: 20),
-            _clockInOutBox(
-              context,
-              isClockIn,
-              isClockOut,
-              clockInTime,
-              clockOutTime,
-            ),
+            _clockInOutBox(context),
             SizedBox(height: 20),
             _menu(context),
             SizedBox(height: 20),
@@ -159,13 +147,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _clockInOutBox(
-    BuildContext context,
-    bool isClockIn,
-    bool isClockOut,
-    DateTime? clockInTime,
-    DateTime? clockOutTime,
-  ) {
+  Widget _clockInOutBox(BuildContext context) {
+    final attendanceProvider = context.watch<AttendanceHistoryProvider>();
+    final isClockIn = attendanceProvider.isClockIn;
+    final isClockOut = attendanceProvider.isClockOut;
+    final clockInTime = attendanceProvider.clockInTime;
+    final clockOutTime = attendanceProvider.clockOutTime;
+
     final hour = today.hour % 12 == 0 ? 12 : today.hour % 12;
     final minute = today.minute.toString().padLeft(2, '0');
     final period = today.hour >= 12 ? 'PM' : 'AM';
@@ -283,10 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.clockInOut,
-                  arguments: {
-                    'userId': 123,
-                    'isClockIn': true,
-                  },
+                  arguments: {'userId': 123, 'isClockIn': true},
                 );
                 // if (context.read<AttendanceHistoryProvider>().errorMessage !=
                 //     null) {
@@ -314,10 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.clockInOut,
-                  arguments: {
-                    'userId': 123,
-                    'isClockIn': false,
-                  },
+                  arguments: {'userId': 123, 'isClockIn': false},
                 );
                 // showDialog(
                 //   context: context,

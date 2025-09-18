@@ -181,6 +181,7 @@ class _ClockInOutScreenState extends State<ClockInOutScreen> {
       _isSubmitting = true;
     });
 
+    await Future.delayed(const Duration(seconds: 2));
     if (isClockIn) {
       await attHistoryProvider.clockIn(
         DateTime.now(),
@@ -206,7 +207,6 @@ class _ClockInOutScreenState extends State<ClockInOutScreen> {
         backgroundColor: Colors.green,
       );
     }
-    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isSubmitting = false;

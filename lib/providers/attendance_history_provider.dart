@@ -31,6 +31,22 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   final AttendanceHistoryServices _attendanceHistoryServices =
       AttendanceHistoryServices();
 
+  bool _isClockIn = false;
+  DateTime? _clockInTime;
+  DateTime? _clockOutTime;
+
+  bool get isClockIn => _isClockIn;
+  DateTime? get clockInTime => _clockInTime;
+  DateTime? get clockOutTime => _clockOutTime;
+
+  Future<void> loadClockStatus() async {
+    _isClockIn = await _attendanceHistoryServices.loadIsClockIn() ?? false;
+    _isClockOut = await _attendanceHistoryServices.loadIsClockOut() ?? false;
+    _clockInTime = await _attendanceHistoryServices.loadClockInTime();
+    _clockOutTime = await _attendanceHistoryServices.loadClockOutTime();
+    notifyListeners();
+  }
+
   void _setUploadingPhoto(bool value) {
     _isUploadingPhoto = value;
     notifyListeners();
@@ -43,6 +59,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
 
     try {
       _employeeId = await _attendanceHistoryServices.loadEmployeeId();
+      print(_employeeId);
       await _attendanceHistoryServices.saveEmployeeId(_employeeId!);
 
       _attHistory = await _attendanceHistoryServices.getAttendanceByEmployeeId(
@@ -50,7 +67,6 @@ class AttendanceHistoryProvider extends ChangeNotifier {
       );
 
       _errorMessage = null;
-      await fetchAttendanceHistoryByEmployeeId();
     } catch (e) {
       _errorMessage = "Failed to load attendance history: ${e.toString()}";
       _attHistory = [];
@@ -88,6 +104,11 @@ class AttendanceHistoryProvider extends ChangeNotifier {
       await _attendanceHistoryServices.saveAttendanceId(attendance.id!);
       await _attendanceHistoryServices.saveIsClockIn(true);
       await _attendanceHistoryServices.saveClockInTime(inTime);
+
+      _isClockIn = true;
+      _isClockOut = false;
+      _clockInTime = inTime;
+      _clockOutTime = null;
 
       _errorMessage = null;
     } catch (e) {
@@ -153,6 +174,9 @@ class AttendanceHistoryProvider extends ChangeNotifier {
       await _attendanceHistoryServices.saveAttendanceId(null);
       await _attendanceHistoryServices.saveIsClockOut(true);
       await _attendanceHistoryServices.saveClockOutTime(outTime);
+
+      _isClockOut = true;
+      _clockOutTime = outTime;
 
       _errorMessage = null;
 
