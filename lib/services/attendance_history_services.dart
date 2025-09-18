@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:hr_attendance_tracker/models/attendance_history.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AttendanceHistoryServices {
   // static const String baseUrl = "http://localhost:7190/api/attendance/";
   static const String baseUrl = "http://10.0.2.2:7190/api/attendance/";
   // static const String baseUrl = "http://192.168.1.50:7190/api/attendance/";
+  final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<List<AttendanceHistory>> getAllAttendance() async {
     try {
@@ -66,6 +70,8 @@ class AttendanceHistoryServices {
         "date": attendanceHistory.date.toIso8601String(),
         "in_time": attendanceHistory.in_time?.toIso8601String(),
         "employee_id": attendanceHistory.employee_id ?? 1,
+        "in_photo": attendanceHistory.in_photo ?? "No photo",
+        "in_latlong": attendanceHistory.in_latlong ?? "No latlong",
       };
 
       final url = "${baseUrl}clock-in";
@@ -95,6 +101,9 @@ class AttendanceHistoryServices {
       final body = {
         "date": attendanceHistory.date.toIso8601String(),
         "out_time": attendanceHistory.out_time?.toIso8601String(),
+        "out_photo": attendanceHistory.out_photo ?? "No photo",
+        "out_latlong": attendanceHistory.out_latlong ?? "No latlong",
+        "status": attendanceHistory.status ?? "Absent",
       };
 
       final url = "${baseUrl}clock-out/${attendanceHistory.employee_id}";
@@ -245,5 +254,35 @@ class AttendanceHistoryServices {
   clearAllPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  Future<String> uploadClockInOutPhoto(
+    String uid,
+    File file,
+    bool clockIn,
+  ) async {
+    try {
+      final timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
+      final ext = path.extension(file.path);
+      var fileName = "${uid}_${timeStamp}_clock_in$ext";
+      if (clockIn) {
+        fileName = "${uid}_${timeStamp}_clock_in$ext";
+      } else {
+        fileName = "${uid}_${timeStamp}_clock_in$ext";
+      }
+
+      await _supabase.storage
+          .from('profile_photos')
+          .upload(fileName, file, fileOptions: const FileOptions(upsert: true));
+
+      final url = _supabase.storage
+          .from('profile_photos')
+          .getPublicUrl(fileName);
+
+      return url;
+    } catch (e) {
+      print("Error in uploadProfilePhoto: $e");
+      rethrow;
+    }
   }
 }

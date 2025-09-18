@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:hr_attendance_tracker/main.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ClockInOutScreen extends StatefulWidget {
   const ClockInOutScreen({super.key});
@@ -172,27 +174,54 @@ class _ClockInOutScreenState extends State<ClockInOutScreen> {
     });
   }
 
-  Future<void> _submitAttendance() async {
+  Future<void> _submitAttendance(
+    AttendanceHistoryProvider attHistoryProvider,
+  ) async {
     setState(() {
       _isSubmitting = true;
     });
 
-    await Future.delayed(const Duration(seconds: 2));
+    if (isClockIn) {
+      await attHistoryProvider.clockIn(
+        DateTime.now(),
+        _location,
+        File(_capturedImage!.path),
+      );
 
-    CustomTheme().customScaffoldMessage(
-      context: context,
-      message: "Attendance recorded successfully!",
-      backgroundColor: Colors.green,
-    );
+      CustomTheme().customScaffoldMessage(
+        context: context,
+        message: "Attendance Clock In successfully!",
+        backgroundColor: Colors.green,
+      );
+    } else {
+      await attHistoryProvider.clockOut(
+        DateTime.now(),
+        _location,
+        File(_capturedImage!.path),
+      );
+
+      CustomTheme().customScaffoldMessage(
+        context: context,
+        message: "Attendance Clock Out successfully!",
+        backgroundColor: Colors.green,
+      );
+    }
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isSubmitting = false;
       _capturedImage = null;
     });
+
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final attHistoryProvider = Provider.of<AttendanceHistoryProvider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
       appBar: CustomAppbar(
@@ -282,7 +311,7 @@ class _ClockInOutScreenState extends State<ClockInOutScreen> {
                       child: CustomTheme().customActionButton(
                         text: "Submit Attendance",
                         icon: Icons.check_circle_outline,
-                        onPressed: _submitAttendance,
+                        onPressed: () => _submitAttendance(attHistoryProvider),
                         isLoading: _isSubmitting,
                         context: context,
                       ),

@@ -13,6 +13,7 @@ import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/providers/attendance_history_provider.dart';
 import 'package:hr_attendance_tracker/screens/tab/attendance/attendance_history_tab.dart';
 
+
 class HomeScreen extends StatefulWidget {
   final void Function(int) onTabSelected;
 
@@ -279,77 +280,93 @@ class _HomeScreenState extends State<HomeScreen> {
               isClockIn: isClockIn,
 
               onPressed: () {
-                if (context.read<AttendanceHistoryProvider>().errorMessage !=
-                    null) {
-                  CustomTheme().customScaffoldMessage(
-                    context: context,
-                    message: context
-                        .read<AttendanceHistoryProvider>()
-                        .errorMessage!,
-                    backgroundColor: Colors.red,
-                  );
-                } else {
-                  context.read<AttendanceHistoryProvider>().clockIn(today);
-                  CustomTheme().customScaffoldMessage(
-                    context: context,
-                    message: 'Clock In successfully',
-                  );
-                  widget.onTabSelected(1);
-                }
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.clockInOut,
+                  arguments: {
+                    'userId': 123,
+                    'isClockIn': true,
+                  },
+                );
+                // if (context.read<AttendanceHistoryProvider>().errorMessage !=
+                //     null) {
+                //   CustomTheme().customScaffoldMessage(
+                //     context: context,
+                //     message: context
+                //         .read<AttendanceHistoryProvider>()
+                //         .errorMessage!,
+                //     backgroundColor: Colors.red,
+                //   );
+                // } else {
+                //   context.read<AttendanceHistoryProvider>().clockIn(today);
+                //   CustomTheme().customScaffoldMessage(
+                //     context: context,
+                //     message: 'Clock In successfully',
+                //   );
+                //   widget.onTabSelected(1);
+                // }
               },
             ),
           ] else if (!isClockOut) ...[
             ButtonClockInOut(
               isClockIn: isClockIn,
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) {
-                    return AlertDialog(
-                      title: Text("Clock Out"),
-                      content: Text("Are you sure want to clock out?"),
-                      actions: [
-                        TextButton(
-                          child: Text("Cancel"),
-                          onPressed: () => Navigator.of(ctx).pop(),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                          onPressed: () {
-                            context.read<AttendanceHistoryProvider>().clockOut(
-                              today,
-                            );
-                            if (context
-                                    .read<AttendanceHistoryProvider>()
-                                    .errorMessage !=
-                                null) {
-                              CustomTheme().customScaffoldMessage(
-                                context: context,
-                                message: context
-                                    .read<AttendanceHistoryProvider>()
-                                    .errorMessage!,
-                                backgroundColor: Colors.red,
-                              );
-                            } else {
-                              Navigator.of(ctx).pop();
-                              CustomTheme().customScaffoldMessage(
-                                context: context,
-                                message: 'Clock Out successfully',
-                              );
-                              widget.onTabSelected(1);
-                            }
-                          },
-                          child: Text(
-                            'Clock Out',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    );
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.clockInOut,
+                  arguments: {
+                    'userId': 123,
+                    'isClockIn': false,
                   },
                 );
+                // showDialog(
+                //   context: context,
+                //   builder: (ctx) {
+                //     return AlertDialog(
+                //       title: Text("Clock Out"),
+                //       content: Text("Are you sure want to clock out?"),
+                //       actions: [
+                //         TextButton(
+                //           child: Text("Cancel"),
+                //           onPressed: () => Navigator.of(ctx).pop(),
+                //         ),
+                //         ElevatedButton(
+                //           style: ElevatedButton.styleFrom(
+                //             backgroundColor: Colors.red,
+                //           ),
+                //           onPressed: () {
+                //             // context.read<AttendanceHistoryProvider>().clockOut(
+                //             //   today,
+                //             // );
+                //             // if (context
+                //             //         .read<AttendanceHistoryProvider>()
+                //             //         .errorMessage !=
+                //             //     null) {
+                //             //   CustomTheme().customScaffoldMessage(
+                //             //     context: context,
+                //             //     message: context
+                //             //         .read<AttendanceHistoryProvider>()
+                //             //         .errorMessage!,
+                //             //     backgroundColor: Colors.red,
+                //             //   );
+                //             // } else {
+                //             //   Navigator.of(ctx).pop();
+                //             //   CustomTheme().customScaffoldMessage(
+                //             //     context: context,
+                //             //     message: 'Clock Out successfully',
+                //             //   );
+                //             //   widget.onTabSelected(1);
+                //             // }
+                //           },
+                //           child: Text(
+                //             'Clock Out',
+                //             style: TextStyle(color: Colors.white),
+                //           ),
+                //         ),
+                //       ],
+                //     );
+                //   },
+                // );
               },
             ),
           ],

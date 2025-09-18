@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:hr_attendance_tracker/models/attendance_history.dart';
 import 'package:hr_attendance_tracker/models/attendance_summary.dart';
@@ -20,8 +22,19 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   int? get currentAttendanceId => _currentAttendanceId;
   bool get isClockOut => _isClockOut;
 
+  bool _isUploadingPhoto = false;
+  bool get isUploadingPhoto => _isUploadingPhoto;
+
+  File? _selectedImageFile;
+  File? get selectedImageFile => _selectedImageFile;
+
   final AttendanceHistoryServices _attendanceHistoryServices =
       AttendanceHistoryServices();
+
+  void _setUploadingPhoto(bool value) {
+    _isUploadingPhoto = value;
+    notifyListeners();
+  }
 
   Future<void> fetchAttendanceHistoryByEmployeeId() async {
     _errorMessage = null;
@@ -37,6 +50,7 @@ class AttendanceHistoryProvider extends ChangeNotifier {
       );
 
       _errorMessage = null;
+      await fetchAttendanceHistoryByEmployeeId();
     } catch (e) {
       _errorMessage = "Failed to load attendance history: ${e.toString()}";
       _attHistory = [];
@@ -46,18 +60,30 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> clockIn(DateTime inTime) async {
+  Future<void> clockIn(
+    DateTime inTime,
+    String clockInLatLong,
+    File clockInPhoto,
+  ) async {
     _isLoading = true;
     notifyListeners();
 
-    final today = DateTime.now();
-    final data = AttendanceHistory(
-      date: today,
-      in_time: inTime,
-      employee_id: _employeeId,
-    );
-
     try {
+      final clockInPhotoUrl = await uploadProfilePhoto(
+        clockInPhoto,
+        _employeeId!,
+        true,
+      );
+
+      final today = DateTime.now();
+      final data = AttendanceHistory(
+        date: today,
+        in_time: inTime,
+        employee_id: _employeeId,
+        in_photo: clockInPhotoUrl,
+        in_latlong: clockInLatLong,
+      );
+
       final attendance = await _attendanceHistoryServices.clockIn(data);
       await _attendanceHistoryServices.saveAttendanceId(attendance.id!);
       await _attendanceHistoryServices.saveIsClockIn(true);
@@ -73,13 +99,16 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> clockOut(DateTime outTime) async {
+  Future<void> clockOut(
+    DateTime outTime,
+    String clockOutLatLong,
+    File clockOutPhoto,
+  ) async {
     _errorMessage = null;
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Ensure employee ID is available
       if (_employeeId == null) {
         _employeeId = await _attendanceHistoryServices.loadEmployeeId();
         if (_employeeId == null) {
@@ -100,28 +129,33 @@ class AttendanceHistoryProvider extends ChangeNotifier {
         return;
       }
 
+      final clockOutPhotoUrl = await uploadProfilePhoto(
+        clockOutPhoto,
+        _employeeId!,
+        true,
+      );
+
       final today = DateTime.now();
       final data = AttendanceHistory(
         id: attendanceId,
         date: today,
         out_time: outTime,
         employee_id: _employeeId,
+        out_photo: clockOutPhotoUrl,
+        out_latlong: clockOutLatLong,
+        status: "attend",
       );
 
       print("Employee ID: $_employeeId");
 
       await _attendanceHistoryServices.clockOut(data);
 
-      // Update SharedPreferences
-      await _attendanceHistoryServices.saveAttendanceId(
-        null,
-      ); // Clear attendance ID
+      await _attendanceHistoryServices.saveAttendanceId(null);
       await _attendanceHistoryServices.saveIsClockOut(true);
       await _attendanceHistoryServices.saveClockOutTime(outTime);
 
       _errorMessage = null;
 
-      // Refresh attendance history to show the updated record
       await fetchAttendanceHistoryByEmployeeId();
     } catch (e) {
       _errorMessage = "Failed to clock out: ${e.toString()}";
@@ -129,6 +163,29 @@ class AttendanceHistoryProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<String> uploadProfilePhoto(File file, String uid, bool clockIn) async {
+    _setUploadingPhoto(true);
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final url = await _attendanceHistoryServices.uploadClockInOutPhoto(
+        uid,
+        file,
+        clockIn,
+      );
+
+      _errorMessage = null;
+      notifyListeners();
+      return url;
+    } catch (e) {
+      _errorMessage = "Failed to upload photo: $e";
+      notifyListeners();
+      rethrow;
+    } finally {
+      _setUploadingPhoto(false);
     }
   }
 
