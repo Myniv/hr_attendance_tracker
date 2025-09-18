@@ -267,114 +267,119 @@ class _AttendanceHistoryTabState extends State<AttendanceHistoryTab> {
     int id,
     BuildContext context,
   ) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
-      child: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(color: CustomTheme.colorYellow, width: 2),
-          borderRadius: CustomTheme.borderRadius,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: CustomTheme.colorYellow,
-                  border: Border.all(color: CustomTheme.colorYellow),
-                  borderRadius: CustomTheme.borderRadius,
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          "/attendance-history-detail",
+          arguments: {'attendance_id': id},
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
+        child: Container(
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(color: CustomTheme.colorYellow, width: 2),
+            borderRadius: CustomTheme.borderRadius,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: CustomTheme.colorYellow,
+                    border: Border.all(color: CustomTheme.colorYellow),
+                    borderRadius: CustomTheme.borderRadius,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        getDayName(date!),
+                        style: CustomTheme().superSmallFont(
+                          Colors.black,
+                          null,
+                          context,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        CustomTheme().formatDayDate(date!),
+                        style: CustomTheme().smallFont(
+                          Colors.black,
+                          null,
+                          context,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+              Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      getDayName(date!),
+                      "Check In",
                       style: CustomTheme().superSmallFont(
-                        Colors.black,
+                        Colors.white,
                         null,
                         context,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text(
-                      CustomTheme().formatDayDate(date!),
-                      style: CustomTheme().smallFont(
-                        Colors.black,
-                        null,
-                        context,
-                      ),
+                      inTime != null ? CustomTheme().formatTime(inTime) : "Off",
+                      style: inTime != null
+                          ? CustomTheme().smallFont(Colors.white, null, context)
+                          : CustomTheme().smallFont(Colors.red, null, context),
                     ),
                   ],
                 ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Check In",
-                    style: CustomTheme().superSmallFont(
-                      Colors.white,
-                      null,
-                      context,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Check Out",
+                      style: CustomTheme().superSmallFont(
+                        Colors.white,
+                        null,
+                        context,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    inTime != null ? CustomTheme().formatTime(inTime) : "Off",
-                    style: inTime != null
-                        ? CustomTheme().smallFont(Colors.white, null, context)
-                        : CustomTheme().smallFont(Colors.red, null, context),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Check Out",
-                    style: CustomTheme().superSmallFont(
-                      Colors.white,
-                      null,
-                      context,
+                    SizedBox(height: 10),
+                    Text(
+                      outTime != null
+                          ? CustomTheme().formatTime(outTime)
+                          : "Off",
+                      style: outTime != null
+                          ? CustomTheme().smallFont(Colors.white, null, context)
+                          : CustomTheme().smallFont(Colors.red, null, context),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    outTime != null ? CustomTheme().formatTime(outTime) : "Off",
-                    style: outTime != null
-                        ? CustomTheme().smallFont(Colors.white, null, context)
-                        : CustomTheme().smallFont(Colors.red, null, context),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    "/attendance-history-detail",
-                    arguments: {'attendance_id': id},
-                  );
-                },
-                icon: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                  size: 20,
+                  ],
                 ),
               ),
-            ),
-          ],
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
