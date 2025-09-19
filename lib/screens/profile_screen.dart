@@ -69,12 +69,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: CustomTheme.backgroundScreenColor,
-      appBar: AppBar(
-        backgroundColor: CustomTheme.colorLightBrown,
-        foregroundColor: Colors.white,
-        title: Text(profile?.name ?? 'Profile'),
-        elevation: 0,
-      ),
+      appBar: profileProvider.profile2 != null
+          ? AppBar(
+              backgroundColor: CustomTheme.colorLightBrown,
+              foregroundColor: Colors.white,
+              title: Text(profile?.name ?? 'Profile'),
+              elevation: 0,
+            )
+          : null,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

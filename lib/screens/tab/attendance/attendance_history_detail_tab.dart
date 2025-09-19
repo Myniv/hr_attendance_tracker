@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:hr_attendance_tracker/custom_theme.dart';
+import 'package:hr_attendance_tracker/widgets/custom_appbar.dart';
 import 'package:hr_attendance_tracker/widgets/no_item.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -72,6 +73,11 @@ class _AttendanceHistoryDetailTabState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppbar(
+        title: widget.isClockIn ? "Clock In" : "Clock Out",
+        onBack: () => Navigator.of(context).pop(),
+        icon: Icons.arrow_back,
+      ),
       backgroundColor: CustomTheme.backgroundScreenColor,
       body: SafeArea(
         child: SingleChildScrollView(

@@ -5,7 +5,15 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final IconData? icon;
   final VoidCallback? onBack;
-  const CustomAppbar({super.key, required this.title, this.icon, this.onBack});
+  final bool forceDrawer; // Add this parameter
+
+  const CustomAppbar({
+    super.key,
+    required this.title,
+    this.icon,
+    this.onBack,
+    this.forceDrawer = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,24 +22,25 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: CustomTheme.colorBrown,
       title: Text(title, style: TextStyle(color: Colors.white)),
-      leading: canPop
-          ? IconButton(
-              onPressed: onBack,
-              icon: Icon(icon),
-              color: Colors.white,
-            )
-          : Builder(
+      leading: forceDrawer
+          ? Builder(
               builder: (context) => IconButton(
                 onPressed: () => Scaffold.of(context).openDrawer(),
                 icon: Icon(Icons.menu, color: Colors.white),
               ),
-            ),
-      // actions: [
-      //   IconButton(
-      //     icon: Icon(Icons.edit, color: Colors.white),
-      //     onPressed: () {},
-      //   ),
-      // ],
+            )
+          : (canPop
+                ? IconButton(
+                    onPressed: onBack ?? () => Navigator.of(context).pop(),
+                    icon: Icon(icon ?? Icons.arrow_back),
+                    color: Colors.white,
+                  )
+                : Builder(
+                    builder: (context) => IconButton(
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      icon: Icon(Icons.menu, color: Colors.white),
+                    ),
+                  )),
     );
   }
 

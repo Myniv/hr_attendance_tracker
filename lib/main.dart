@@ -112,6 +112,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: CustomAppbar(
         title: _titleScreen[_currentIndex],
+        forceDrawer: true,
       ), // AppBar(title: Text(_titleScreen[_currentIndex]),),
       backgroundColor: CustomTheme.backgroundScreenColor,
       body: _screens[_currentIndex],
