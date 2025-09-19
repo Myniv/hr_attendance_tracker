@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hr_attendance_tracker/custom_theme.dart';
 import 'package:hr_attendance_tracker/screens/auth/auth_wrapper.dart';
 
 class CustomSplashScreen extends StatefulWidget {
@@ -33,14 +34,14 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomTheme.backgroundScreenColor,
       body: Center(
         child: AnimatedOpacity(
           opacity: _visible ? 1.0 : 0.0,
           duration: Duration(seconds: 2),
           child: AnimatedDefaultTextStyle(
             style: TextStyle(
-              color: Colors.white,
+              color: CustomTheme.colorGold,
               fontSize: _visible ? 64 : 20,
               fontWeight: FontWeight.bold,
               letterSpacing: 4,
@@ -49,18 +50,30 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Image.asset(
+                //   "assets/images/logo.png",
+                //   height: _visible ? 100 : 50,
+                //   width: _visible ? 100 : 50,
+                // ),
+                Icon(
+                  Icons.coffee,
+                  color: CustomTheme.colorGold,
+                  size: _visible ? 100 : 50,
+                ),
                 Text(
-                  "Portofolio App",
+                  "HR Attendance Tracker",
                   style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: _visible ? 64 : 20,
+                    color: CustomTheme.colorGold,
+                    fontSize: _visible ? 30 : 20,
                   ),
                 ),
                 SizedBox(height: 20),
                 AnimatedScale(
                   scale: _visible ? 1.5 : 0.5,
                   duration: const Duration(seconds: 2),
-                  child: const CircularProgressIndicator(color: Colors.blue),
+                  child: const CircularProgressIndicator(
+                    color: CustomTheme.whiteButNot,
+                  ),
                 ),
               ],
             ),
