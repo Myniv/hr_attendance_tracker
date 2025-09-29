@@ -42,6 +42,8 @@ class AttendanceHistoryProvider extends ChangeNotifier {
   DateTime? get clockOutTime => _clockOutTime;
 
   Future<void> loadClockStatus() async {
+    await _attendanceHistoryServices.resetDailyClockState();
+
     _isClockIn = await _attendanceHistoryServices.loadIsClockIn() ?? false;
     _isClockOut = await _attendanceHistoryServices.loadIsClockOut() ?? false;
     _clockInTime = await _attendanceHistoryServices.loadClockInTime();

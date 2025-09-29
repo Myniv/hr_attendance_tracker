@@ -275,14 +275,32 @@ class AttendanceHistoryServices {
           .from('attendance')
           .upload(fileName, file, fileOptions: const FileOptions(upsert: true));
 
-      final url = _supabase.storage
-          .from('attendance')
-          .getPublicUrl(fileName);
+      final url = _supabase.storage.from('attendance').getPublicUrl(fileName);
 
       return url;
     } catch (e) {
       print("Error in uploadProfilePhoto: $e");
       rethrow;
+    }
+  }
+
+  Future<void> resetDailyClockState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final lastClockDate = prefs.getString("last_clock_date");
+      final today = DateTime.now();
+      final todayString = "${today.year}-${today.month}-${today.day}";
+
+      if (lastClockDate != todayString) {
+        await prefs.setBool("is_clock_in", false);
+        await prefs.setBool("is_clock_out", false);
+        await prefs.remove("clock_in_time");
+        await prefs.remove("clock_out_time");
+        await prefs.remove("attendance_id");
+        await prefs.setString("last_clock_date", todayString);
+      }
+    } catch (e) {
+      throw Exception("Failed to reset daily clock state");
     }
   }
 }
