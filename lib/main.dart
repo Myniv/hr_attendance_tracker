@@ -88,7 +88,6 @@ class _MainScreenState extends State<MainScreen> {
   void _changeScreen(List<Widget> screen) {
     setState(() {
       _screens = screen;
-      _currentIndex = 0;
     });
   }
 
