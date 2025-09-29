@@ -157,6 +157,12 @@ class CustomDrawer extends StatelessWidget {
                     icon: Icons.logout,
                     title: 'Logout',
                     onTap: () async {
+                      final profileProvider = Provider.of<ProfileProvider>(
+                        context,
+                        listen: false,
+                      );
+                      profileProvider.clearProfile();
+
                       await authProvider.signOut();
                       if (context.mounted) {
                         Navigator.pushReplacementNamed(

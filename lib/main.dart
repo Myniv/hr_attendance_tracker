@@ -77,10 +77,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  List<Widget> _screens = [];
 
   void _changeTab(int index) {
     setState(() {
       _currentIndex = index;
+    });
+  }
+
+  void _changeScreen(List<Widget> screen) {
+    setState(() {
+      _screens = screen;
+      _currentIndex = 0;
     });
   }
 
@@ -106,9 +114,14 @@ class _MainScreenState extends State<MainScreen> {
       ProfileListScreen(),
     ];
 
-    late final List<Widget> _screens = profileProvider.profile?.role == "admin"
-        ? _screensAdmin
-        : _screensMember;
+    // late final List<Widget> _screens = profileProvider.profile?.role == "admin"
+    //     ? _screensAdmin
+    //     : _screensMember;
+    if (profileProvider.profile?.role == "admin") {
+      _changeScreen(_screensAdmin);
+    } else {
+      _changeScreen(_screensMember);
+    }
     return Scaffold(
       appBar: CustomAppbar(
         title: _titleScreen[_currentIndex],
